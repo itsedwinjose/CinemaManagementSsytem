@@ -1,69 +1,222 @@
-# Prerequisites
-*.d
+# ============================================================
+# Cinema Ticketing System
+# C# / .NET / WinForms / MySQL
+# ============================================================
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# ------------------------------------------------------------
+# Visual Studio
+# ------------------------------------------------------------
 
-# Precompiled Headers
-*.gch
-*.pch
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
 
-# Linker files
-*.ilk
+# Visual Studio Code
+.vscode/
 
-# Debugger Files
-*.pdb
+# Rider / JetBrains
+.idea/
+*.sln.iml
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
+# ------------------------------------------------------------
+# .NET Build Output
+# ------------------------------------------------------------
+
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+arm64/
+
+# Generated build artifacts
 *.dll
-*.so.*
-
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
 *.exe
-*.out
-*.app
-
-# Build directories
-build/
-Build/
-build-*/
-
-# CMake generated files
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-Makefile
-install_manifest.txt
-compile_commands.json
-
-# Temporary files
-*.tmp
+*.pdb
+*.cache
+*.obj
+*.ilk
 *.log
+
+# Test results
+TestResults/
+*.trx
+*.testlog
+*.coverage
+*.coveragexml
+
+# Code coverage
+coverage/
+.coverage/
+coverage.opencover.xml
+
+# ------------------------------------------------------------
+# NuGet
+# ------------------------------------------------------------
+
+packages/
+*.nupkg
+*.snupkg
+.nuget/
+
+# NuGet generated files
+project.assets.json
+project.nuget.cache
+*.nuget.g.props
+*.nuget.g.targets
+
+# ------------------------------------------------------------
+# User / Local Configuration
+# ------------------------------------------------------------
+
+# Local application configuration
+appsettings.Local.json
+appsettings.Development.json
+
+# Local database configuration
+database.local.sql
+connection.local.json
+connection.local.json
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Local secrets
+secrets.json
+secrets.local.json
+*.secret.json
+
+# ------------------------------------------------------------
+# Logs
+# ------------------------------------------------------------
+
+logs/
+Logs/
+*.log
+
+# ------------------------------------------------------------
+# Local Database / Database Dumps
+# ------------------------------------------------------------
+
+*.db
+*.sqlite
+*.sqlite3
+
+# Local MySQL dumps
+*.dump
 *.bak
+
+# Ignore temporary SQL exports
+database/tmp/
+database/temp/
+
+# ------------------------------------------------------------
+# Application Data
+# ------------------------------------------------------------
+
+data/
+Data/
+
+# Runtime generated files
+runtime/
+temp/
+tmp/
+
+# Printer/runtime generated files
+print-output/
+print-preview/
+
+# ------------------------------------------------------------
+# Windows
+# ------------------------------------------------------------
+
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Windows installer artifacts
+*.msi
+*.msix
+*.appx
+
+# ------------------------------------------------------------
+# Publish Output
+# ------------------------------------------------------------
+
+publish/
+Publish/
+artifacts/
+Artifacts/
+
+# .NET publish folders
+**/publish/
+**/artifacts/
+
+# ------------------------------------------------------------
+# Certificates / Keys
+# ------------------------------------------------------------
+
+*.pfx
+*.p12
+*.pem
+*.key
+*.cer
+
+# ------------------------------------------------------------
+# Sensitive Configuration
+# ------------------------------------------------------------
+
+# Do not commit real database credentials
+*.local.config
+appsettings.Production.json
+
+# ------------------------------------------------------------
+# Temporary / Backup Files
+# ------------------------------------------------------------
+
+*.tmp
+*.temp
 *.swp
+*.swo
+*.orig
+*.bak
+*~
 
-# vcpkg
-vcpkg_installed/
+# ------------------------------------------------------------
+# OS / Editor Files
+# ------------------------------------------------------------
 
-# debug information files
-*.dwo
+.DS_Store
 
-# test output & cache
-Testing/
-.cache/
+# ------------------------------------------------------------
+# Documentation generated files
+# ------------------------------------------------------------
+
+docs/generated/
+docs/output/
+
+# ------------------------------------------------------------
+# Generated reports
+# ------------------------------------------------------------
+
+reports/generated/
+reports/output/
+
+# ------------------------------------------------------------
+# Test generated data
+# ------------------------------------------------------------
+
+tests/TestResults/
+tests/test-output/
+
+# ------------------------------------------------------------
+# Optional: AI/Codex local files
+# ------------------------------------------------------------
+
+.codex/
+.codex-local/

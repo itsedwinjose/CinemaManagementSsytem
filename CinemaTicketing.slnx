@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="CinemaTicketing.Core/CinemaTicketing.Core.csproj" />
+  <Project Path="CinemaTicketing.Data/CinemaTicketing.Data.csproj" />
+  <Project Path="CinemaTicketing.Tests/CinemaTicketing.Tests.csproj" />
+  <Project Path="CinemaTicketing.WinForms/CinemaTicketing.WinForms.csproj" />
+</Solution>
