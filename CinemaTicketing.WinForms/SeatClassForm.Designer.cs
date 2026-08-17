@@ -25,77 +25,78 @@ partial class SeatClassForm
 
     private void InitializeComponent()
     {
-        headerLabel = new System.Windows.Forms.Label();
-        grid = new System.Windows.Forms.DataGridView();
-        nameLabel = new System.Windows.Forms.Label();
-        nameTextBox = new System.Windows.Forms.TextBox();
-        orderLabel = new System.Windows.Forms.Label();
-        orderNumeric = new System.Windows.Forms.NumericUpDown();
-        activeCheckBox = new System.Windows.Forms.CheckBox();
-        saveButton = new System.Windows.Forms.Button();
-        deleteButton = new System.Windows.Forms.Button();
-        statusLabel = new System.Windows.Forms.Label();
+        headerLabel = new Label();
+        grid = new DataGridView();
+        nameLabel = new Label();
+        nameTextBox = new TextBox();
+        orderLabel = new Label();
+        orderNumeric = new NumericUpDown();
+        activeCheckBox = new CheckBox();
+        saveButton = new Button();
+        deleteButton = new Button();
+        statusLabel = new Label();
         ((System.ComponentModel.ISupportInitialize)grid).BeginInit();
         ((System.ComponentModel.ISupportInitialize)orderNumeric).BeginInit();
         SuspendLayout();
         // 
         // headerLabel
         // 
-        headerLabel.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
-        headerLabel.Dock = System.Windows.Forms.DockStyle.Top;
-        headerLabel.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-        headerLabel.ForeColor = System.Drawing.Color.White;
-        headerLabel.Location = new System.Drawing.Point(0, 0);
+        headerLabel.BackColor = Color.FromArgb(0, 120, 215);
+        headerLabel.Dock = DockStyle.Top;
+        headerLabel.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+        headerLabel.ForeColor = Color.White;
+        headerLabel.Location = new Point(0, 0);
         headerLabel.Name = "headerLabel";
-        headerLabel.Size = new System.Drawing.Size(464, 35);
+        headerLabel.Size = new Size(821, 35);
         headerLabel.TabIndex = 0;
         headerLabel.Text = " Seat Class Management";
-        headerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+        headerLabel.TextAlign = ContentAlignment.MiddleLeft;
         // 
         // grid
         // 
         grid.AllowUserToAddRows = false;
         grid.AllowUserToDeleteRows = false;
-        grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        grid.Location = new System.Drawing.Point(12, 45);
+        grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+        grid.Location = new Point(12, 45);
         grid.Name = "grid";
         grid.ReadOnly = true;
         grid.RowHeadersVisible = false;
-        grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-        grid.Size = new System.Drawing.Size(440, 170);
+        grid.RowHeadersWidth = 82;
+        grid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        grid.Size = new Size(797, 268);
         grid.TabIndex = 1;
         grid.CellDoubleClick += grid_CellDoubleClick;
         // 
         // nameLabel
         // 
         nameLabel.AutoSize = true;
-        nameLabel.Location = new System.Drawing.Point(12, 230);
+        nameLabel.Location = new Point(12, 341);
         nameLabel.Name = "nameLabel";
-        nameLabel.Size = new System.Drawing.Size(72, 15);
+        nameLabel.Size = new Size(143, 32);
         nameLabel.TabIndex = 2;
         nameLabel.Text = "Class Name:";
         // 
         // nameTextBox
         // 
-        nameTextBox.Location = new System.Drawing.Point(90, 227);
+        nameTextBox.Location = new Point(192, 341);
         nameTextBox.Name = "nameTextBox";
-        nameTextBox.Size = new System.Drawing.Size(140, 23);
+        nameTextBox.Size = new Size(353, 39);
         nameTextBox.TabIndex = 3;
         // 
         // orderLabel
         // 
         orderLabel.AutoSize = true;
-        orderLabel.Location = new System.Drawing.Point(245, 230);
+        orderLabel.Location = new Point(192, 414);
         orderLabel.Name = "orderLabel";
-        orderLabel.Size = new System.Drawing.Size(40, 15);
+        orderLabel.Size = new Size(80, 32);
         orderLabel.TabIndex = 4;
         orderLabel.Text = "Order:";
         // 
         // orderNumeric
         // 
-        orderNumeric.Location = new System.Drawing.Point(290, 227);
+        orderNumeric.Location = new Point(331, 412);
         orderNumeric.Name = "orderNumeric";
-        orderNumeric.Size = new System.Drawing.Size(60, 23);
+        orderNumeric.Size = new Size(60, 39);
         orderNumeric.TabIndex = 5;
         orderNumeric.Value = new decimal(new int[] { 1, 0, 0, 0 });
         // 
@@ -103,19 +104,19 @@ partial class SeatClassForm
         // 
         activeCheckBox.AutoSize = true;
         activeCheckBox.Checked = true;
-        activeCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-        activeCheckBox.Location = new System.Drawing.Point(365, 229);
+        activeCheckBox.CheckState = CheckState.Checked;
+        activeCheckBox.Location = new Point(434, 415);
         activeCheckBox.Name = "activeCheckBox";
-        activeCheckBox.Size = new System.Drawing.Size(59, 19);
+        activeCheckBox.Size = new Size(111, 36);
         activeCheckBox.TabIndex = 6;
         activeCheckBox.Text = "Active";
         activeCheckBox.UseVisualStyleBackColor = true;
         // 
         // saveButton
         // 
-        saveButton.Location = new System.Drawing.Point(280, 265);
+        saveButton.Location = new Point(454, 495);
         saveButton.Name = "saveButton";
-        saveButton.Size = new System.Drawing.Size(80, 28);
+        saveButton.Size = new Size(160, 71);
         saveButton.TabIndex = 7;
         saveButton.Text = "Save";
         saveButton.UseVisualStyleBackColor = true;
@@ -123,9 +124,9 @@ partial class SeatClassForm
         // 
         // deleteButton
         // 
-        deleteButton.Location = new System.Drawing.Point(372, 265);
+        deleteButton.Location = new Point(644, 495);
         deleteButton.Name = "deleteButton";
-        deleteButton.Size = new System.Drawing.Size(80, 28);
+        deleteButton.Size = new Size(156, 71);
         deleteButton.TabIndex = 8;
         deleteButton.Text = "Delete";
         deleteButton.UseVisualStyleBackColor = true;
@@ -134,15 +135,15 @@ partial class SeatClassForm
         // statusLabel
         // 
         statusLabel.AutoSize = true;
-        statusLabel.Location = new System.Drawing.Point(12, 272);
+        statusLabel.Location = new Point(24, 514);
         statusLabel.Name = "statusLabel";
-        statusLabel.Size = new System.Drawing.Size(42, 15);
+        statusLabel.Size = new Size(83, 32);
         statusLabel.TabIndex = 9;
         statusLabel.Text = "Ready.";
         // 
         // SeatClassForm
         // 
-        ClientSize = new System.Drawing.Size(464, 305);
+        ClientSize = new Size(821, 591);
         Controls.Add(statusLabel);
         Controls.Add(deleteButton);
         Controls.Add(saveButton);
@@ -153,11 +154,11 @@ partial class SeatClassForm
         Controls.Add(nameLabel);
         Controls.Add(grid);
         Controls.Add(headerLabel);
-        FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+        FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
         Name = "SeatClassForm";
-        StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+        StartPosition = FormStartPosition.CenterParent;
         Text = "Seat Class Management";
         Shown += SeatClassForm_Shown;
         ((System.ComponentModel.ISupportInitialize)grid).EndInit();

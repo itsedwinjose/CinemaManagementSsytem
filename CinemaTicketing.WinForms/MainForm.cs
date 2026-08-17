@@ -415,10 +415,11 @@ internal partial class MainForm : Form
         form.ShowDialog(this);
     }
 
-    private void audiLayoutButton_Click(object sender, EventArgs e)
+    private async void layoutBtn_Click(object sender, EventArgs e)
     {
         using var form = new AudiLayoutForm(_layoutService, _seatClassRepository, _cinemaId);
         form.ShowDialog(this);
+        await LoadAudiTabsAsync();
     }
 
     private void setMovieButton_Click(object sender, EventArgs e)
@@ -462,5 +463,20 @@ internal partial class MainForm : Form
     {
         var active = ActiveControl;
         return active is TextBox || active is ComboBox || active is DateTimePicker;
+    }
+
+    private void soldTotalValueLabel_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void reprintCheckBox_CheckedChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void ticketRadio_CheckedChanged(object sender, EventArgs e)
+    {
+
     }
 }

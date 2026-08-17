@@ -32,7 +32,7 @@ namespace CinemaTicketing.WinForms
             headerPanel.Controls.Add(titleLabel);
             headerPanel.Dock = DockStyle.Top;
             headerPanel.Location = new Point(0, 0);
-            headerPanel.Margin = new Padding(6, 6, 6, 6);
+            headerPanel.Margin = new Padding(6);
             headerPanel.Name = "headerPanel";
             headerPanel.Size = new Size(799, 115);
             headerPanel.TabIndex = 6;
@@ -72,7 +72,7 @@ namespace CinemaTicketing.WinForms
             // userNameTextBox
             // 
             userNameTextBox.Location = new Point(58, 215);
-            userNameTextBox.Margin = new Padding(6, 6, 6, 6);
+            userNameTextBox.Margin = new Padding(6);
             userNameTextBox.Name = "userNameTextBox";
             userNameTextBox.Size = new Size(676, 39);
             userNameTextBox.TabIndex = 4;
@@ -80,7 +80,7 @@ namespace CinemaTicketing.WinForms
             // passwordTextBox
             // 
             passwordTextBox.Location = new Point(58, 333);
-            passwordTextBox.Margin = new Padding(6, 6, 6, 6);
+            passwordTextBox.Margin = new Padding(6);
             passwordTextBox.Name = "passwordTextBox";
             passwordTextBox.PasswordChar = '*';
             passwordTextBox.Size = new Size(676, 39);
@@ -94,7 +94,7 @@ namespace CinemaTicketing.WinForms
             loginButton.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
             loginButton.ForeColor = Color.White;
             loginButton.Location = new Point(58, 437);
-            loginButton.Margin = new Padding(6, 6, 6, 6);
+            loginButton.Margin = new Padding(6);
             loginButton.Name = "loginButton";
             loginButton.Size = new Size(299, 79);
             loginButton.TabIndex = 1;
@@ -125,12 +125,12 @@ namespace CinemaTicketing.WinForms
             Controls.Add(userNameLabel);
             Controls.Add(headerPanel);
             FormBorderStyle = FormBorderStyle.FixedDialog;
-            Margin = new Padding(6, 6, 6, 6);
+            Margin = new Padding(6);
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "LoginForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Cinema Login";
+            Text = "Login";
             Load += LoginForm_Load;
             headerPanel.ResumeLayout(false);
             headerPanel.PerformLayout();

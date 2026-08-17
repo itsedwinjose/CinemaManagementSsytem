@@ -34,13 +34,13 @@ public class TheatreSettingsServiceTests
         {
             return Task.FromResult<IReadOnlyList<CinemaInfo>>(new[]
             {
-                new CinemaInfo { Id = 1, Name = "Demo Cinema", IsActive = true }
+                new CinemaInfo { Id = 1, Name = "Movie", IsActive = true }
             });
         }
 
         public Task<CinemaInfo?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
         {
-            return Task.FromResult<CinemaInfo?>(new CinemaInfo { Id = 1, Name = "Demo Cinema", IsActive = true });
+            return Task.FromResult<CinemaInfo?>(new CinemaInfo { Id = 1, Name = "Movie", IsActive = true });
         }
     }
 

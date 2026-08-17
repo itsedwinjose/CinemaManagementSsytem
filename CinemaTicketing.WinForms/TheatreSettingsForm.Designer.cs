@@ -62,47 +62,41 @@ partial class TheatreSettingsForm
 
     private void InitializeComponent()
     {
-        headerPanel = new System.Windows.Forms.Panel();
-        headerTitleLabel = new System.Windows.Forms.Label();
-
-        topInputsPanel = new System.Windows.Forms.Panel();
-        cinemaLabel = new System.Windows.Forms.Label();
-        cinemaComboBox = new System.Windows.Forms.ComboBox();
-        showTypeLabel = new System.Windows.Forms.Label();
-        showTypeComboBox = new System.Windows.Forms.ComboBox();
-        showTimeLabel = new System.Windows.Forms.Label();
-        showTimeTextBox = new System.Windows.Forms.TextBox();
-        priceLabel = new System.Windows.Forms.Label();
-        priceNumericUpDown = new System.Windows.Forms.NumericUpDown();
-        saveButton = new System.Windows.Forms.Button();
-
-        settingsGrid = new System.Windows.Forms.DataGridView();
-        theatreColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-        showTypeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-        showTimeColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-        priceColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-        editButtonColumn = new System.Windows.Forms.DataGridViewButtonColumn();
-        deleteButtonColumn = new System.Windows.Forms.DataGridViewButtonColumn();
-
-        rightPanel = new System.Windows.Forms.Panel();
-        threeDGroup = new System.Windows.Forms.GroupBox();
-        threeDPriceLabel = new System.Windows.Forms.Label();
-        threeDPriceNumeric = new System.Windows.Forms.NumericUpDown();
-        threeDAddButton = new System.Windows.Forms.Button();
-
-        showTypeGroup = new System.Windows.Forms.GroupBox();
-        newShowTypeLabel = new System.Windows.Forms.Label();
-        newShowTypeTextBox = new System.Windows.Forms.TextBox();
-        addShowTypeButton = new System.Windows.Forms.Button();
-        showTypeGrid = new System.Windows.Forms.DataGridView();
-        stNameColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-        stIdColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-        stEditButtonColumn = new System.Windows.Forms.DataGridViewButtonColumn();
-        stDeleteButtonColumn = new System.Windows.Forms.DataGridViewButtonColumn();
-
-        statusStrip = new System.Windows.Forms.StatusStrip();
-        statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-
+        headerPanel = new Panel();
+        headerTitleLabel = new Label();
+        topInputsPanel = new Panel();
+        cinemaLabel = new Label();
+        cinemaComboBox = new ComboBox();
+        showTypeLabel = new Label();
+        showTypeComboBox = new ComboBox();
+        showTimeLabel = new Label();
+        showTimeTextBox = new TextBox();
+        priceLabel = new Label();
+        priceNumericUpDown = new NumericUpDown();
+        saveButton = new Button();
+        settingsGrid = new DataGridView();
+        theatreColumn = new DataGridViewTextBoxColumn();
+        showTypeColumn = new DataGridViewTextBoxColumn();
+        showTimeColumn = new DataGridViewTextBoxColumn();
+        priceColumn = new DataGridViewTextBoxColumn();
+        editButtonColumn = new DataGridViewButtonColumn();
+        deleteButtonColumn = new DataGridViewButtonColumn();
+        rightPanel = new Panel();
+        threeDGroup = new GroupBox();
+        threeDPriceLabel = new Label();
+        threeDPriceNumeric = new NumericUpDown();
+        threeDAddButton = new Button();
+        showTypeGroup = new GroupBox();
+        newShowTypeLabel = new Label();
+        newShowTypeTextBox = new TextBox();
+        addShowTypeButton = new Button();
+        showTypeGrid = new DataGridView();
+        stNameColumn = new DataGridViewTextBoxColumn();
+        stIdColumn = new DataGridViewTextBoxColumn();
+        stEditButtonColumn = new DataGridViewButtonColumn();
+        stDeleteButtonColumn = new DataGridViewButtonColumn();
+        statusStrip = new StatusStrip();
+        statusLabel = new ToolStripStatusLabel();
         headerPanel.SuspendLayout();
         topInputsPanel.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)priceNumericUpDown).BeginInit();
@@ -114,36 +108,33 @@ partial class TheatreSettingsForm
         ((System.ComponentModel.ISupportInitialize)showTypeGrid).BeginInit();
         statusStrip.SuspendLayout();
         SuspendLayout();
-
         // 
         // headerPanel
         // 
-        headerPanel.BackColor = System.Drawing.Color.FromArgb(0, 168, 223);
+        headerPanel.BackColor = Color.FromArgb(0, 168, 223);
         headerPanel.Controls.Add(headerTitleLabel);
-        headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
-        headerPanel.Location = new System.Drawing.Point(0, 0);
+        headerPanel.Dock = DockStyle.Top;
+        headerPanel.Location = new Point(0, 0);
         headerPanel.Name = "headerPanel";
-        headerPanel.Size = new System.Drawing.Size(950, 36);
+        headerPanel.Size = new Size(1870, 36);
         headerPanel.TabIndex = 0;
-
         // 
         // headerTitleLabel
         // 
-        headerTitleLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-        headerTitleLabel.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-        headerTitleLabel.ForeColor = System.Drawing.Color.White;
-        headerTitleLabel.Location = new System.Drawing.Point(0, 0);
+        headerTitleLabel.Dock = DockStyle.Fill;
+        headerTitleLabel.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+        headerTitleLabel.ForeColor = Color.White;
+        headerTitleLabel.Location = new Point(0, 0);
         headerTitleLabel.Name = "headerTitleLabel";
-        headerTitleLabel.Padding = new System.Windows.Forms.Padding(10, 0, 0, 0);
-        headerTitleLabel.Size = new System.Drawing.Size(950, 36);
+        headerTitleLabel.Padding = new Padding(10, 0, 0, 0);
+        headerTitleLabel.Size = new Size(1870, 36);
         headerTitleLabel.TabIndex = 0;
         headerTitleLabel.Text = "Settings";
-        headerTitleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-
+        headerTitleLabel.TextAlign = ContentAlignment.MiddleLeft;
         // 
         // topInputsPanel
         // 
-        topInputsPanel.BackColor = System.Drawing.Color.FromArgb(220, 238, 245);
+        topInputsPanel.BackColor = Color.FromArgb(220, 238, 245);
         topInputsPanel.Controls.Add(cinemaLabel);
         topInputsPanel.Controls.Add(cinemaComboBox);
         topInputsPanel.Controls.Add(showTypeLabel);
@@ -153,249 +144,234 @@ partial class TheatreSettingsForm
         topInputsPanel.Controls.Add(priceLabel);
         topInputsPanel.Controls.Add(priceNumericUpDown);
         topInputsPanel.Controls.Add(saveButton);
-        topInputsPanel.Dock = System.Windows.Forms.DockStyle.Top;
-        topInputsPanel.Location = new System.Drawing.Point(0, 36);
+        topInputsPanel.Dock = DockStyle.Top;
+        topInputsPanel.Location = new Point(0, 36);
         topInputsPanel.Name = "topInputsPanel";
-        topInputsPanel.Size = new System.Drawing.Size(950, 48);
+        topInputsPanel.Size = new Size(1870, 132);
         topInputsPanel.TabIndex = 1;
-
         // 
         // cinemaLabel
         // 
         cinemaLabel.AutoSize = true;
-        cinemaLabel.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-        cinemaLabel.Location = new System.Drawing.Point(10, 6);
+        cinemaLabel.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+        cinemaLabel.Location = new Point(82, 6);
         cinemaLabel.Name = "cinemaLabel";
-        cinemaLabel.Size = new System.Drawing.Size(84, 15);
+        cinemaLabel.Size = new Size(164, 31);
         cinemaLabel.TabIndex = 0;
         cinemaLabel.Text = "Theatre Name";
-
         // 
         // cinemaComboBox
         // 
-        cinemaComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+        cinemaComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
         cinemaComboBox.FormattingEnabled = true;
-        cinemaComboBox.Location = new System.Drawing.Point(10, 22);
+        cinemaComboBox.Location = new Point(82, 58);
         cinemaComboBox.Name = "cinemaComboBox";
-        cinemaComboBox.Size = new System.Drawing.Size(130, 23);
+        cinemaComboBox.Size = new Size(277, 40);
         cinemaComboBox.TabIndex = 1;
-
         // 
         // showTypeLabel
         // 
         showTypeLabel.AutoSize = true;
-        showTypeLabel.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-        showTypeLabel.Location = new System.Drawing.Point(150, 6);
+        showTypeLabel.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+        showTypeLabel.Location = new Point(401, 6);
         showTypeLabel.Name = "showTypeLabel";
-        showTypeLabel.Size = new System.Drawing.Size(65, 15);
+        showTypeLabel.Size = new Size(126, 31);
         showTypeLabel.TabIndex = 2;
         showTypeLabel.Text = "Show type";
-
+        showTypeLabel.Click += showTypeLabel_Click;
         // 
         // showTypeComboBox
         // 
-        showTypeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+        showTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
         showTypeComboBox.FormattingEnabled = true;
-        showTypeComboBox.Location = new System.Drawing.Point(150, 22);
+        showTypeComboBox.Location = new Point(401, 58);
         showTypeComboBox.Name = "showTypeComboBox";
-        showTypeComboBox.Size = new System.Drawing.Size(120, 23);
+        showTypeComboBox.Size = new Size(286, 40);
         showTypeComboBox.TabIndex = 3;
-
         // 
         // showTimeLabel
         // 
         showTimeLabel.AutoSize = true;
-        showTimeLabel.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-        showTimeLabel.Location = new System.Drawing.Point(280, 6);
+        showTimeLabel.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+        showTimeLabel.Location = new Point(735, 6);
         showTimeLabel.Name = "showTimeLabel";
-        showTimeLabel.Size = new System.Drawing.Size(67, 15);
+        showTimeLabel.Size = new Size(132, 31);
         showTimeLabel.TabIndex = 4;
         showTimeLabel.Text = "Show Time";
-
         // 
         // showTimeTextBox
         // 
-        showTimeTextBox.Location = new System.Drawing.Point(280, 22);
+        showTimeTextBox.Location = new Point(735, 58);
         showTimeTextBox.Name = "showTimeTextBox";
-        showTimeTextBox.Size = new System.Drawing.Size(85, 23);
+        showTimeTextBox.Size = new Size(205, 39);
         showTimeTextBox.TabIndex = 5;
         showTimeTextBox.Text = "11:30 AM";
-
         // 
         // priceLabel
         // 
         priceLabel.AutoSize = true;
-        priceLabel.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-        priceLabel.Location = new System.Drawing.Point(375, 6);
+        priceLabel.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+        priceLabel.Location = new Point(972, 6);
         priceLabel.Name = "priceLabel";
-        priceLabel.Size = new System.Drawing.Size(35, 15);
+        priceLabel.Size = new Size(67, 31);
         priceLabel.TabIndex = 6;
         priceLabel.Text = "Price";
-
         // 
         // priceNumericUpDown
         // 
         priceNumericUpDown.DecimalPlaces = 2;
-        priceNumericUpDown.Location = new System.Drawing.Point(375, 22);
+        priceNumericUpDown.Location = new Point(972, 58);
         priceNumericUpDown.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
         priceNumericUpDown.Name = "priceNumericUpDown";
-        priceNumericUpDown.Size = new System.Drawing.Size(80, 23);
+        priceNumericUpDown.Size = new Size(140, 39);
         priceNumericUpDown.TabIndex = 7;
         priceNumericUpDown.Value = new decimal(new int[] { 150, 0, 0, 0 });
-
         // 
         // saveButton
         // 
-        saveButton.BackColor = System.Drawing.Color.FromArgb(0, 168, 223);
-        saveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        saveButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-        saveButton.ForeColor = System.Drawing.Color.White;
-        saveButton.Location = new System.Drawing.Point(465, 21);
+        saveButton.BackColor = Color.FromArgb(0, 168, 223);
+        saveButton.FlatStyle = FlatStyle.Flat;
+        saveButton.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+        saveButton.ForeColor = Color.White;
+        saveButton.Location = new Point(1196, 42);
         saveButton.Name = "saveButton";
-        saveButton.Size = new System.Drawing.Size(75, 25);
+        saveButton.Size = new Size(164, 55);
         saveButton.TabIndex = 8;
         saveButton.Text = "Save";
         saveButton.UseVisualStyleBackColor = false;
         saveButton.Click += saveButton_Click;
-
         // 
         // settingsGrid
         // 
         settingsGrid.AllowUserToAddRows = false;
         settingsGrid.AllowUserToDeleteRows = false;
-        settingsGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-        settingsGrid.BackgroundColor = System.Drawing.Color.White;
-        settingsGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        settingsGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { theatreColumn, showTypeColumn, showTimeColumn, priceColumn, editButtonColumn, deleteButtonColumn });
-        settingsGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-        settingsGrid.Location = new System.Drawing.Point(0, 84);
+        settingsGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        settingsGrid.BackgroundColor = Color.White;
+        settingsGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+        settingsGrid.Columns.AddRange(new DataGridViewColumn[] { theatreColumn, showTypeColumn, showTimeColumn, priceColumn, editButtonColumn, deleteButtonColumn });
+        settingsGrid.Dock = DockStyle.Fill;
+        settingsGrid.Location = new Point(0, 168);
         settingsGrid.MultiSelect = false;
         settingsGrid.Name = "settingsGrid";
         settingsGrid.ReadOnly = true;
         settingsGrid.RowHeadersWidth = 28;
-        settingsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-        settingsGrid.Size = new System.Drawing.Size(640, 480);
+        settingsGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        settingsGrid.Size = new Size(1360, 915);
         settingsGrid.TabIndex = 2;
         settingsGrid.CellContentClick += settingsGrid_CellContentClick;
-
         // 
         // theatreColumn
         // 
         theatreColumn.DataPropertyName = "Theatre";
         theatreColumn.HeaderText = "Theatre";
+        theatreColumn.MinimumWidth = 10;
         theatreColumn.Name = "theatreColumn";
         theatreColumn.ReadOnly = true;
-
         // 
         // showTypeColumn
         // 
         showTypeColumn.DataPropertyName = "ShowType";
         showTypeColumn.HeaderText = "Show Type";
+        showTypeColumn.MinimumWidth = 10;
         showTypeColumn.Name = "showTypeColumn";
         showTypeColumn.ReadOnly = true;
-
         // 
         // showTimeColumn
         // 
         showTimeColumn.DataPropertyName = "ShowTime";
         showTimeColumn.HeaderText = "Show Time";
+        showTimeColumn.MinimumWidth = 10;
         showTimeColumn.Name = "showTimeColumn";
         showTimeColumn.ReadOnly = true;
-
         // 
         // priceColumn
         // 
         priceColumn.DataPropertyName = "Price";
         priceColumn.HeaderText = "Price";
+        priceColumn.MinimumWidth = 10;
         priceColumn.Name = "priceColumn";
         priceColumn.ReadOnly = true;
-
         // 
         // editButtonColumn
         // 
         editButtonColumn.HeaderText = "EDIT";
+        editButtonColumn.MinimumWidth = 10;
         editButtonColumn.Name = "editButtonColumn";
         editButtonColumn.ReadOnly = true;
         editButtonColumn.Text = "UPDATE";
         editButtonColumn.UseColumnTextForButtonValue = true;
-
         // 
         // deleteButtonColumn
         // 
         deleteButtonColumn.HeaderText = "DELETE";
+        deleteButtonColumn.MinimumWidth = 10;
         deleteButtonColumn.Name = "deleteButtonColumn";
         deleteButtonColumn.ReadOnly = true;
         deleteButtonColumn.Text = "DELETE";
         deleteButtonColumn.UseColumnTextForButtonValue = true;
-
         // 
         // rightPanel
         // 
-        rightPanel.BackColor = System.Drawing.Color.FromArgb(215, 232, 240);
-        rightPanel.Controls.Add(threeDGroup);
+        rightPanel.BackColor = Color.FromArgb(215, 232, 240);
         rightPanel.Controls.Add(showTypeGroup);
-        rightPanel.Dock = System.Windows.Forms.DockStyle.Right;
-        rightPanel.Location = new System.Drawing.Point(640, 84);
+        rightPanel.Controls.Add(threeDGroup);
+        rightPanel.Dock = DockStyle.Right;
+        rightPanel.Location = new Point(1360, 168);
         rightPanel.Name = "rightPanel";
-        rightPanel.Padding = new System.Windows.Forms.Padding(6);
-        rightPanel.Size = new System.Drawing.Size(310, 480);
+        rightPanel.Padding = new Padding(6);
+        rightPanel.Size = new Size(510, 915);
         rightPanel.TabIndex = 3;
-
         // 
         // threeDGroup
         // 
         threeDGroup.Controls.Add(threeDPriceLabel);
-        threeDGroup.Controls.Add(threeDPriceNumeric);
         threeDGroup.Controls.Add(threeDAddButton);
-        threeDGroup.Dock = System.Windows.Forms.DockStyle.Top;
-        threeDGroup.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-        threeDGroup.ForeColor = System.Drawing.Color.FromArgb(0, 102, 204);
-        threeDGroup.Location = new System.Drawing.Point(6, 6);
+        threeDGroup.Controls.Add(threeDPriceNumeric);
+        threeDGroup.Dock = DockStyle.Top;
+        threeDGroup.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+        threeDGroup.ForeColor = Color.FromArgb(0, 102, 204);
+        threeDGroup.Location = new Point(6, 6);
         threeDGroup.Name = "threeDGroup";
-        threeDGroup.Size = new System.Drawing.Size(298, 75);
+        threeDGroup.Size = new Size(498, 107);
         threeDGroup.TabIndex = 0;
         threeDGroup.TabStop = false;
         threeDGroup.Text = "Add 3D Charge";
-
         // 
         // threeDPriceLabel
         // 
         threeDPriceLabel.AutoSize = true;
-        threeDPriceLabel.Font = new System.Drawing.Font("Segoe UI", 8.5F);
-        threeDPriceLabel.ForeColor = System.Drawing.Color.Black;
-        threeDPriceLabel.Location = new System.Drawing.Point(10, 32);
+        threeDPriceLabel.Font = new Font("Segoe UI", 8.5F);
+        threeDPriceLabel.ForeColor = Color.Black;
+        threeDPriceLabel.Location = new Point(21, 59);
         threeDPriceLabel.Name = "threeDPriceLabel";
-        threeDPriceLabel.Size = new System.Drawing.Size(33, 15);
+        threeDPriceLabel.Size = new Size(64, 31);
         threeDPriceLabel.TabIndex = 0;
         threeDPriceLabel.Text = "Price";
-
         // 
         // threeDPriceNumeric
         // 
         threeDPriceNumeric.DecimalPlaces = 2;
-        threeDPriceNumeric.Font = new System.Drawing.Font("Segoe UI", 8.5F);
-        threeDPriceNumeric.Location = new System.Drawing.Point(50, 30);
+        threeDPriceNumeric.Font = new Font("Segoe UI", 8.5F);
+        threeDPriceNumeric.Location = new Point(174, 59);
         threeDPriceNumeric.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
         threeDPriceNumeric.Name = "threeDPriceNumeric";
-        threeDPriceNumeric.Size = new System.Drawing.Size(150, 23);
+        threeDPriceNumeric.Size = new Size(150, 38);
         threeDPriceNumeric.TabIndex = 1;
         threeDPriceNumeric.Value = new decimal(new int[] { 30, 0, 0, 0 });
-
         // 
         // threeDAddButton
         // 
-        threeDAddButton.BackColor = System.Drawing.Color.FromArgb(0, 168, 223);
-        threeDAddButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        threeDAddButton.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-        threeDAddButton.ForeColor = System.Drawing.Color.White;
-        threeDAddButton.Location = new System.Drawing.Point(215, 29);
+        threeDAddButton.BackColor = Color.FromArgb(0, 168, 223);
+        threeDAddButton.FlatStyle = FlatStyle.Flat;
+        threeDAddButton.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+        threeDAddButton.ForeColor = Color.White;
+        threeDAddButton.Location = new Point(349, 52);
         threeDAddButton.Name = "threeDAddButton";
-        threeDAddButton.Size = new System.Drawing.Size(75, 25);
+        threeDAddButton.Size = new Size(113, 49);
         threeDAddButton.TabIndex = 2;
         threeDAddButton.Text = "Add";
         threeDAddButton.UseVisualStyleBackColor = false;
         threeDAddButton.Click += threeDAddButton_Click;
-
         // 
         // showTypeGroup
         // 
@@ -403,135 +379,129 @@ partial class TheatreSettingsForm
         showTypeGroup.Controls.Add(newShowTypeTextBox);
         showTypeGroup.Controls.Add(addShowTypeButton);
         showTypeGroup.Controls.Add(showTypeGrid);
-        showTypeGroup.Dock = System.Windows.Forms.DockStyle.Fill;
-        showTypeGroup.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-        showTypeGroup.ForeColor = System.Drawing.Color.FromArgb(0, 102, 204);
-        showTypeGroup.Location = new System.Drawing.Point(6, 81);
+        showTypeGroup.Dock = DockStyle.Fill;
+        showTypeGroup.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+        showTypeGroup.ForeColor = Color.FromArgb(0, 102, 204);
+        showTypeGroup.Location = new Point(6, 113);
         showTypeGroup.Name = "showTypeGroup";
-        showTypeGroup.Padding = new System.Windows.Forms.Padding(6);
-        showTypeGroup.Size = new System.Drawing.Size(298, 393);
+        showTypeGroup.Padding = new Padding(6);
+        showTypeGroup.Size = new Size(498, 796);
         showTypeGroup.TabIndex = 1;
         showTypeGroup.TabStop = false;
         showTypeGroup.Text = "Add Show Type";
-
         // 
         // newShowTypeLabel
         // 
         newShowTypeLabel.AutoSize = true;
-        newShowTypeLabel.Font = new System.Drawing.Font("Segoe UI", 8.5F);
-        newShowTypeLabel.ForeColor = System.Drawing.Color.Black;
-        newShowTypeLabel.Location = new System.Drawing.Point(8, 22);
+        newShowTypeLabel.Font = new Font("Segoe UI", 8.5F);
+        newShowTypeLabel.ForeColor = Color.Black;
+        newShowTypeLabel.Location = new Point(9, 37);
         newShowTypeLabel.Name = "newShowTypeLabel";
-        newShowTypeLabel.Size = new System.Drawing.Size(65, 15);
+        newShowTypeLabel.Size = new Size(123, 31);
         newShowTypeLabel.TabIndex = 0;
         newShowTypeLabel.Text = "Show Type";
-
         // 
         // newShowTypeTextBox
         // 
-        newShowTypeTextBox.Font = new System.Drawing.Font("Segoe UI", 8.5F);
-        newShowTypeTextBox.Location = new System.Drawing.Point(8, 40);
+        newShowTypeTextBox.Font = new Font("Segoe UI", 8.5F);
+        newShowTypeTextBox.Location = new Point(9, 82);
         newShowTypeTextBox.Name = "newShowTypeTextBox";
-        newShowTypeTextBox.Size = new System.Drawing.Size(190, 23);
+        newShowTypeTextBox.Size = new Size(315, 38);
         newShowTypeTextBox.TabIndex = 1;
-
         // 
         // addShowTypeButton
         // 
-        addShowTypeButton.BackColor = System.Drawing.Color.FromArgb(0, 168, 223);
-        addShowTypeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-        addShowTypeButton.Font = new System.Drawing.Font("Segoe UI", 8.5F, System.Drawing.FontStyle.Bold);
-        addShowTypeButton.ForeColor = System.Drawing.Color.White;
-        addShowTypeButton.Location = new System.Drawing.Point(205, 39);
+        addShowTypeButton.BackColor = Color.FromArgb(0, 168, 223);
+        addShowTypeButton.FlatStyle = FlatStyle.Flat;
+        addShowTypeButton.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+        addShowTypeButton.ForeColor = Color.White;
+        addShowTypeButton.Location = new Point(349, 71);
         addShowTypeButton.Name = "addShowTypeButton";
-        addShowTypeButton.Size = new System.Drawing.Size(85, 25);
+        addShowTypeButton.Size = new Size(113, 49);
         addShowTypeButton.TabIndex = 2;
         addShowTypeButton.Text = "Add";
         addShowTypeButton.UseVisualStyleBackColor = false;
         addShowTypeButton.Click += addShowTypeButton_Click;
-
         // 
         // showTypeGrid
         // 
         showTypeGrid.AllowUserToAddRows = false;
         showTypeGrid.AllowUserToDeleteRows = false;
-        showTypeGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-        showTypeGrid.BackgroundColor = System.Drawing.Color.White;
-        showTypeGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        showTypeGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] { stNameColumn, stIdColumn, stEditButtonColumn, stDeleteButtonColumn });
-        showTypeGrid.Dock = System.Windows.Forms.DockStyle.Bottom;
-        showTypeGrid.Font = new System.Drawing.Font("Segoe UI", 8.5F);
-        showTypeGrid.Location = new System.Drawing.Point(6, 75);
+        showTypeGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        showTypeGrid.BackgroundColor = Color.White;
+        showTypeGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+        showTypeGrid.Columns.AddRange(new DataGridViewColumn[] { stNameColumn, stIdColumn, stEditButtonColumn, stDeleteButtonColumn });
+        showTypeGrid.Dock = DockStyle.Bottom;
+        showTypeGrid.Font = new Font("Segoe UI", 8.5F);
+        showTypeGrid.Location = new Point(6, 149);
         showTypeGrid.MultiSelect = false;
         showTypeGrid.Name = "showTypeGrid";
         showTypeGrid.ReadOnly = true;
         showTypeGrid.RowHeadersWidth = 24;
-        showTypeGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-        showTypeGrid.Size = new System.Drawing.Size(286, 312);
+        showTypeGrid.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        showTypeGrid.Size = new Size(486, 641);
         showTypeGrid.TabIndex = 3;
         showTypeGrid.CellContentClick += showTypeGrid_CellContentClick;
-
         // 
         // stNameColumn
         // 
         stNameColumn.DataPropertyName = "Name";
         stNameColumn.HeaderText = "Show Type";
+        stNameColumn.MinimumWidth = 10;
         stNameColumn.Name = "stNameColumn";
         stNameColumn.ReadOnly = true;
-
         // 
         // stIdColumn
         // 
         stIdColumn.DataPropertyName = "Id";
         stIdColumn.HeaderText = "ID";
+        stIdColumn.MinimumWidth = 10;
         stIdColumn.Name = "stIdColumn";
         stIdColumn.ReadOnly = true;
-
         // 
         // stEditButtonColumn
         // 
         stEditButtonColumn.HeaderText = "EDIT";
+        stEditButtonColumn.MinimumWidth = 10;
         stEditButtonColumn.Name = "stEditButtonColumn";
         stEditButtonColumn.ReadOnly = true;
         stEditButtonColumn.Text = "UPDATE";
         stEditButtonColumn.UseColumnTextForButtonValue = true;
-
         // 
         // stDeleteButtonColumn
         // 
         stDeleteButtonColumn.HeaderText = "DELETE";
+        stDeleteButtonColumn.MinimumWidth = 10;
         stDeleteButtonColumn.Name = "stDeleteButtonColumn";
         stDeleteButtonColumn.ReadOnly = true;
         stDeleteButtonColumn.Text = "DELETE";
         stDeleteButtonColumn.UseColumnTextForButtonValue = true;
-
         // 
         // statusStrip
         // 
-        statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { statusLabel });
-        statusStrip.Location = new System.Drawing.Point(0, 564);
+        statusStrip.ImageScalingSize = new Size(32, 32);
+        statusStrip.Items.AddRange(new ToolStripItem[] { statusLabel });
+        statusStrip.Location = new Point(0, 1083);
         statusStrip.Name = "statusStrip";
-        statusStrip.Size = new System.Drawing.Size(950, 22);
+        statusStrip.Size = new Size(1870, 42);
         statusStrip.TabIndex = 4;
-
         // 
         // statusLabel
         // 
         statusLabel.Name = "statusLabel";
-        statusLabel.Size = new System.Drawing.Size(39, 17);
+        statusLabel.Size = new Size(83, 32);
         statusLabel.Text = "Ready.";
-
         // 
         // TheatreSettingsForm
         // 
-        ClientSize = new System.Drawing.Size(950, 586);
+        ClientSize = new Size(1870, 1125);
         Controls.Add(settingsGrid);
         Controls.Add(rightPanel);
         Controls.Add(topInputsPanel);
         Controls.Add(headerPanel);
         Controls.Add(statusStrip);
         Name = "TheatreSettingsForm";
-        StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+        StartPosition = FormStartPosition.CenterParent;
         Text = "Settings";
         Shown += TheatreSettingsForm_Shown;
         headerPanel.ResumeLayout(false);

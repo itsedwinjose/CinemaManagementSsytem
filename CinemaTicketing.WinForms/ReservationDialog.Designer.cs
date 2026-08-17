@@ -37,100 +37,99 @@ partial class ReservationDialog
 
     private void InitializeComponent()
     {
-        headerLabel = new System.Windows.Forms.Label();
-        nameLabel = new System.Windows.Forms.Label();
-        nameTextBox = new System.Windows.Forms.TextBox();
-        phoneLabel = new System.Windows.Forms.Label();
-        phoneTextBox = new System.Windows.Forms.TextBox();
-        addressLabel = new System.Windows.Forms.Label();
-        addressTextBox = new System.Windows.Forms.TextBox();
-        chargesGroup = new System.Windows.Forms.GroupBox();
-        threeDChargeCheckBox = new System.Windows.Forms.CheckBox();
-        resChargeCheckBox = new System.Windows.Forms.CheckBox();
-        paymentGroup = new System.Windows.Forms.GroupBox();
-        upiRadio = new System.Windows.Forms.RadioButton();
-        cardRadio = new System.Windows.Forms.RadioButton();
-        onlineRadio = new System.Windows.Forms.RadioButton();
-        cashRadio = new System.Windows.Forms.RadioButton();
-        summaryLabel = new System.Windows.Forms.Label();
-        onlineBookingButton = new System.Windows.Forms.Button();
-        unblockButton = new System.Windows.Forms.Button();
-        freeTicketButton = new System.Windows.Forms.Button();
-        reservedButton = new System.Windows.Forms.Button();
-        teleReservedButton = new System.Windows.Forms.Button();
-        cancelButton = new System.Windows.Forms.Button();
-        chargesGroup.SuspendLayout();
+        headerLabel = new Label();
+        nameLabel = new Label();
+        nameTextBox = new TextBox();
+        phoneLabel = new Label();
+        phoneTextBox = new TextBox();
+        addressLabel = new Label();
+        addressTextBox = new TextBox();
+        chargesGroup = new GroupBox();
+        threeDChargeCheckBox = new CheckBox();
+        resChargeCheckBox = new CheckBox();
+        paymentGroup = new GroupBox();
+        upiRadio = new RadioButton();
+        cardRadio = new RadioButton();
+        onlineRadio = new RadioButton();
+        cashRadio = new RadioButton();
+        summaryLabel = new Label();
+        onlineBookingButton = new Button();
+        unblockButton = new Button();
+        freeTicketButton = new Button();
+        reservedButton = new Button();
+        teleReservedButton = new Button();
+        cancelButton = new Button();
         paymentGroup.SuspendLayout();
         SuspendLayout();
         // 
         // headerLabel
         // 
-        headerLabel.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
-        headerLabel.Dock = System.Windows.Forms.DockStyle.Top;
-        headerLabel.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-        headerLabel.ForeColor = System.Drawing.Color.White;
-        headerLabel.Location = new System.Drawing.Point(0, 0);
+        headerLabel.BackColor = Color.FromArgb(0, 120, 215);
+        headerLabel.Dock = DockStyle.Top;
+        headerLabel.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+        headerLabel.ForeColor = Color.White;
+        headerLabel.Location = new Point(0, 0);
         headerLabel.Name = "headerLabel";
-        headerLabel.Size = new System.Drawing.Size(484, 35);
+        headerLabel.Size = new Size(662, 47);
         headerLabel.TabIndex = 0;
         headerLabel.Text = " Reservation / Special Booking";
-        headerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+        headerLabel.TextAlign = ContentAlignment.MiddleLeft;
         // 
         // nameLabel
         // 
         nameLabel.AutoSize = true;
-        nameLabel.Location = new System.Drawing.Point(15, 50);
+        nameLabel.Location = new Point(35, 66);
         nameLabel.Name = "nameLabel";
-        nameLabel.Size = new System.Drawing.Size(42, 15);
+        nameLabel.Size = new Size(83, 32);
         nameLabel.TabIndex = 1;
         nameLabel.Text = "Name:";
         // 
         // nameTextBox
         // 
-        nameTextBox.Location = new System.Drawing.Point(85, 47);
+        nameTextBox.Location = new Point(253, 50);
         nameTextBox.Name = "nameTextBox";
-        nameTextBox.Size = new System.Drawing.Size(385, 23);
+        nameTextBox.Size = new Size(385, 39);
         nameTextBox.TabIndex = 2;
+        nameTextBox.TextChanged += nameTextBox_TextChanged;
         // 
         // phoneLabel
         // 
         phoneLabel.AutoSize = true;
-        phoneLabel.Location = new System.Drawing.Point(15, 80);
+        phoneLabel.Location = new Point(35, 119);
         phoneLabel.Name = "phoneLabel";
-        phoneLabel.Size = new System.Drawing.Size(63, 15);
+        phoneLabel.Size = new Size(126, 32);
         phoneLabel.TabIndex = 3;
         phoneLabel.Text = "Phone No:";
         // 
         // phoneTextBox
         // 
-        phoneTextBox.Location = new System.Drawing.Point(85, 77);
+        phoneTextBox.Location = new Point(253, 112);
         phoneTextBox.Name = "phoneTextBox";
-        phoneTextBox.Size = new System.Drawing.Size(180, 23);
+        phoneTextBox.Size = new Size(385, 39);
         phoneTextBox.TabIndex = 4;
         // 
         // addressLabel
         // 
         addressLabel.AutoSize = true;
-        addressLabel.Location = new System.Drawing.Point(15, 110);
+        addressLabel.Location = new Point(35, 170);
         addressLabel.Name = "addressLabel";
-        addressLabel.Size = new System.Drawing.Size(52, 15);
+        addressLabel.Size = new Size(103, 32);
         addressLabel.TabIndex = 5;
         addressLabel.Text = "Address:";
         // 
         // addressTextBox
         // 
-        addressTextBox.Location = new System.Drawing.Point(85, 107);
+        addressTextBox.Location = new Point(253, 170);
         addressTextBox.Name = "addressTextBox";
-        addressTextBox.Size = new System.Drawing.Size(385, 23);
+        addressTextBox.Size = new Size(385, 39);
         addressTextBox.TabIndex = 6;
+        addressTextBox.TextChanged += addressTextBox_TextChanged;
         // 
         // chargesGroup
         // 
-        chargesGroup.Controls.Add(threeDChargeCheckBox);
-        chargesGroup.Controls.Add(resChargeCheckBox);
-        chargesGroup.Location = new System.Drawing.Point(15, 140);
+        chargesGroup.Location = new Point(21, 229);
         chargesGroup.Name = "chargesGroup";
-        chargesGroup.Size = new System.Drawing.Size(455, 55);
+        chargesGroup.Size = new Size(617, 154);
         chargesGroup.TabIndex = 7;
         chargesGroup.TabStop = false;
         chargesGroup.Text = "Applicable Additional Charges";
@@ -138,9 +137,9 @@ partial class ReservationDialog
         // threeDChargeCheckBox
         // 
         threeDChargeCheckBox.AutoSize = true;
-        threeDChargeCheckBox.Location = new System.Drawing.Point(230, 23);
+        threeDChargeCheckBox.Location = new Point(35, 337);
         threeDChargeCheckBox.Name = "threeDChargeCheckBox";
-        threeDChargeCheckBox.Size = new System.Drawing.Size(161, 19);
+        threeDChargeCheckBox.Size = new Size(312, 36);
         threeDChargeCheckBox.TabIndex = 1;
         threeDChargeCheckBox.Text = "3D Charge (₹30 Per Seat)";
         threeDChargeCheckBox.UseVisualStyleBackColor = true;
@@ -149,9 +148,9 @@ partial class ReservationDialog
         // resChargeCheckBox
         // 
         resChargeCheckBox.AutoSize = true;
-        resChargeCheckBox.Location = new System.Drawing.Point(20, 23);
+        resChargeCheckBox.Location = new Point(35, 281);
         resChargeCheckBox.Name = "resChargeCheckBox";
-        resChargeCheckBox.Size = new System.Drawing.Size(193, 19);
+        resChargeCheckBox.Size = new Size(367, 36);
         resChargeCheckBox.TabIndex = 0;
         resChargeCheckBox.Text = "Reservation Charge (₹10/Seat)";
         resChargeCheckBox.UseVisualStyleBackColor = true;
@@ -163,9 +162,9 @@ partial class ReservationDialog
         paymentGroup.Controls.Add(cardRadio);
         paymentGroup.Controls.Add(onlineRadio);
         paymentGroup.Controls.Add(cashRadio);
-        paymentGroup.Location = new System.Drawing.Point(15, 205);
+        paymentGroup.Location = new Point(21, 389);
         paymentGroup.Name = "paymentGroup";
-        paymentGroup.Size = new System.Drawing.Size(455, 50);
+        paymentGroup.Size = new Size(617, 111);
         paymentGroup.TabIndex = 8;
         paymentGroup.TabStop = false;
         paymentGroup.Text = "Payment Mode";
@@ -173,9 +172,9 @@ partial class ReservationDialog
         // upiRadio
         // 
         upiRadio.AutoSize = true;
-        upiRadio.Location = new System.Drawing.Point(340, 20);
+        upiRadio.Location = new Point(362, 50);
         upiRadio.Name = "upiRadio";
-        upiRadio.Size = new System.Drawing.Size(65, 19);
+        upiRadio.Size = new Size(121, 36);
         upiRadio.TabIndex = 3;
         upiRadio.Text = "UPI/QR";
         upiRadio.UseVisualStyleBackColor = true;
@@ -183,9 +182,9 @@ partial class ReservationDialog
         // cardRadio
         // 
         cardRadio.AutoSize = true;
-        cardRadio.Location = new System.Drawing.Point(240, 20);
+        cardRadio.Location = new Point(250, 50);
         cardRadio.Name = "cardRadio";
-        cardRadio.Size = new System.Drawing.Size(50, 19);
+        cardRadio.Size = new Size(94, 36);
         cardRadio.TabIndex = 2;
         cardRadio.Text = "Card";
         cardRadio.UseVisualStyleBackColor = true;
@@ -193,9 +192,9 @@ partial class ReservationDialog
         // onlineRadio
         // 
         onlineRadio.AutoSize = true;
-        onlineRadio.Location = new System.Drawing.Point(130, 20);
+        onlineRadio.Location = new Point(128, 50);
         onlineRadio.Name = "onlineRadio";
-        onlineRadio.Size = new System.Drawing.Size(60, 19);
+        onlineRadio.Size = new Size(116, 36);
         onlineRadio.TabIndex = 1;
         onlineRadio.Text = "Online";
         onlineRadio.UseVisualStyleBackColor = true;
@@ -204,9 +203,9 @@ partial class ReservationDialog
         // 
         cashRadio.AutoSize = true;
         cashRadio.Checked = true;
-        cashRadio.Location = new System.Drawing.Point(20, 20);
+        cashRadio.Location = new Point(24, 50);
         cashRadio.Name = "cashRadio";
-        cashRadio.Size = new System.Drawing.Size(51, 19);
+        cashRadio.Size = new Size(96, 36);
         cashRadio.TabIndex = 0;
         cashRadio.TabStop = true;
         cashRadio.Text = "Cash";
@@ -214,20 +213,20 @@ partial class ReservationDialog
         // 
         // summaryLabel
         // 
-        summaryLabel.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
-        summaryLabel.ForeColor = System.Drawing.Color.FromArgb(0, 102, 204);
-        summaryLabel.Location = new System.Drawing.Point(15, 260);
+        summaryLabel.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
+        summaryLabel.ForeColor = Color.FromArgb(0, 102, 204);
+        summaryLabel.Location = new Point(21, 525);
         summaryLabel.Name = "summaryLabel";
-        summaryLabel.Size = new System.Drawing.Size(455, 30);
+        summaryLabel.Size = new Size(455, 30);
         summaryLabel.TabIndex = 9;
         summaryLabel.Text = "Selected Seats: 0 | Total Amount: ₹0.00";
-        summaryLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+        summaryLabel.TextAlign = ContentAlignment.MiddleCenter;
         // 
         // onlineBookingButton
         // 
-        onlineBookingButton.Location = new System.Drawing.Point(15, 300);
+        onlineBookingButton.Location = new Point(12, 604);
         onlineBookingButton.Name = "onlineBookingButton";
-        onlineBookingButton.Size = new System.Drawing.Size(85, 32);
+        onlineBookingButton.Size = new Size(217, 111);
         onlineBookingButton.TabIndex = 10;
         onlineBookingButton.Text = "Online";
         onlineBookingButton.UseVisualStyleBackColor = true;
@@ -235,9 +234,9 @@ partial class ReservationDialog
         // 
         // unblockButton
         // 
-        unblockButton.Location = new System.Drawing.Point(105, 300);
+        unblockButton.Location = new Point(374, 604);
         unblockButton.Name = "unblockButton";
-        unblockButton.Size = new System.Drawing.Size(85, 32);
+        unblockButton.Size = new Size(244, 104);
         unblockButton.TabIndex = 11;
         unblockButton.Text = "Unblock";
         unblockButton.UseVisualStyleBackColor = true;
@@ -245,9 +244,9 @@ partial class ReservationDialog
         // 
         // freeTicketButton
         // 
-        freeTicketButton.Location = new System.Drawing.Point(195, 300);
+        freeTicketButton.Location = new Point(0, 747);
         freeTicketButton.Name = "freeTicketButton";
-        freeTicketButton.Size = new System.Drawing.Size(85, 32);
+        freeTicketButton.Size = new Size(188, 95);
         freeTicketButton.TabIndex = 12;
         freeTicketButton.Text = "Free";
         freeTicketButton.UseVisualStyleBackColor = true;
@@ -255,9 +254,9 @@ partial class ReservationDialog
         // 
         // reservedButton
         // 
-        reservedButton.Location = new System.Drawing.Point(285, 300);
+        reservedButton.Location = new Point(198, 747);
         reservedButton.Name = "reservedButton";
-        reservedButton.Size = new System.Drawing.Size(85, 32);
+        reservedButton.Size = new Size(204, 95);
         reservedButton.TabIndex = 13;
         reservedButton.Text = "Reserved";
         reservedButton.UseVisualStyleBackColor = true;
@@ -265,9 +264,9 @@ partial class ReservationDialog
         // 
         // teleReservedButton
         // 
-        teleReservedButton.Location = new System.Drawing.Point(375, 300);
+        teleReservedButton.Location = new Point(417, 747);
         teleReservedButton.Name = "teleReservedButton";
-        teleReservedButton.Size = new System.Drawing.Size(95, 32);
+        teleReservedButton.Size = new Size(233, 95);
         teleReservedButton.TabIndex = 14;
         teleReservedButton.Text = "Tele Reserved";
         teleReservedButton.UseVisualStyleBackColor = true;
@@ -275,10 +274,10 @@ partial class ReservationDialog
         // 
         // cancelButton
         // 
-        cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-        cancelButton.Location = new System.Drawing.Point(375, 340);
+        cancelButton.DialogResult = DialogResult.Cancel;
+        cancelButton.Location = new Point(409, 1011);
         cancelButton.Name = "cancelButton";
-        cancelButton.Size = new System.Drawing.Size(95, 28);
+        cancelButton.Size = new Size(241, 116);
         cancelButton.TabIndex = 15;
         cancelButton.Text = "Cancel";
         cancelButton.UseVisualStyleBackColor = true;
@@ -286,7 +285,9 @@ partial class ReservationDialog
         // ReservationDialog
         // 
         CancelButton = cancelButton;
-        ClientSize = new System.Drawing.Size(484, 380);
+        ClientSize = new Size(662, 1139);
+        Controls.Add(resChargeCheckBox);
+        Controls.Add(threeDChargeCheckBox);
         Controls.Add(cancelButton);
         Controls.Add(teleReservedButton);
         Controls.Add(reservedButton);
@@ -303,14 +304,12 @@ partial class ReservationDialog
         Controls.Add(nameTextBox);
         Controls.Add(nameLabel);
         Controls.Add(headerLabel);
-        FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+        FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
         Name = "ReservationDialog";
-        StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+        StartPosition = FormStartPosition.CenterParent;
         Text = "Reservation / Special Booking";
-        chargesGroup.ResumeLayout(false);
-        chargesGroup.PerformLayout();
         paymentGroup.ResumeLayout(false);
         paymentGroup.PerformLayout();
         ResumeLayout(false);

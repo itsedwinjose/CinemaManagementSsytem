@@ -35,26 +35,26 @@ partial class AudiLayoutForm
 
     private void InitializeComponent()
     {
-        headerLabel = new System.Windows.Forms.Label();
-        topPanel = new System.Windows.Forms.Panel();
-        manageClassesButton = new System.Windows.Forms.Button();
-        saveButton = new System.Windows.Forms.Button();
-        resizeButton = new System.Windows.Forms.Button();
-        colsNumeric = new System.Windows.Forms.NumericUpDown();
-        colsLabel = new System.Windows.Forms.Label();
-        rowsNumeric = new System.Windows.Forms.NumericUpDown();
-        rowsLabel = new System.Windows.Forms.Label();
-        audiComboBox = new System.Windows.Forms.ComboBox();
-        audiLabel = new System.Windows.Forms.Label();
-        toolBox = new System.Windows.Forms.GroupBox();
-        classComboBox = new System.Windows.Forms.ComboBox();
-        toggleDamagedRadio = new System.Windows.Forms.RadioButton();
-        assignClassRadio = new System.Windows.Forms.RadioButton();
-        markNonSeatRadio = new System.Windows.Forms.RadioButton();
-        markSeatRadio = new System.Windows.Forms.RadioButton();
+        headerLabel = new Label();
+        topPanel = new Panel();
+        manageClassesButton = new Button();
+        saveButton = new Button();
+        resizeButton = new Button();
+        colsNumeric = new NumericUpDown();
+        colsLabel = new Label();
+        rowsNumeric = new NumericUpDown();
+        rowsLabel = new Label();
+        audiComboBox = new ComboBox();
+        audiLabel = new Label();
+        toolBox = new GroupBox();
+        classComboBox = new ComboBox();
+        toggleDamagedRadio = new RadioButton();
+        assignClassRadio = new RadioButton();
+        markNonSeatRadio = new RadioButton();
+        markSeatRadio = new RadioButton();
         seatMapEditor = new CinemaTicketing.WinForms.Controls.CinemaSeatMapControl();
-        statusStrip = new System.Windows.Forms.StatusStrip();
-        statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+        statusStrip = new StatusStrip();
+        statusLabel = new ToolStripStatusLabel();
         topPanel.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)colsNumeric).BeginInit();
         ((System.ComponentModel.ISupportInitialize)rowsNumeric).BeginInit();
@@ -64,16 +64,16 @@ partial class AudiLayoutForm
         // 
         // headerLabel
         // 
-        headerLabel.BackColor = System.Drawing.Color.FromArgb(0, 120, 215);
-        headerLabel.Dock = System.Windows.Forms.DockStyle.Top;
-        headerLabel.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-        headerLabel.ForeColor = System.Drawing.Color.White;
-        headerLabel.Location = new System.Drawing.Point(0, 0);
+        headerLabel.BackColor = Color.FromArgb(0, 120, 215);
+        headerLabel.Dock = DockStyle.Top;
+        headerLabel.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+        headerLabel.ForeColor = Color.White;
+        headerLabel.Location = new Point(0, 0);
         headerLabel.Name = "headerLabel";
-        headerLabel.Size = new System.Drawing.Size(984, 35);
+        headerLabel.Size = new Size(1914, 35);
         headerLabel.TabIndex = 0;
         headerLabel.Text = " Audi Seating Layout Management";
-        headerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+        headerLabel.TextAlign = ContentAlignment.MiddleLeft;
         // 
         // topPanel
         // 
@@ -86,17 +86,17 @@ partial class AudiLayoutForm
         topPanel.Controls.Add(rowsLabel);
         topPanel.Controls.Add(audiComboBox);
         topPanel.Controls.Add(audiLabel);
-        topPanel.Dock = System.Windows.Forms.DockStyle.Top;
-        topPanel.Location = new System.Drawing.Point(0, 35);
+        topPanel.Dock = DockStyle.Top;
+        topPanel.Location = new Point(0, 35);
         topPanel.Name = "topPanel";
-        topPanel.Size = new System.Drawing.Size(984, 45);
+        topPanel.Size = new Size(1914, 73);
         topPanel.TabIndex = 1;
         // 
         // manageClassesButton
         // 
-        manageClassesButton.Location = new System.Drawing.Point(820, 10);
+        manageClassesButton.Location = new Point(1648, 10);
         manageClassesButton.Name = "manageClassesButton";
-        manageClassesButton.Size = new System.Drawing.Size(145, 26);
+        manageClassesButton.Size = new Size(254, 57);
         manageClassesButton.TabIndex = 8;
         manageClassesButton.Text = "Seat Classes...";
         manageClassesButton.UseVisualStyleBackColor = true;
@@ -104,9 +104,9 @@ partial class AudiLayoutForm
         // 
         // saveButton
         // 
-        saveButton.Location = new System.Drawing.Point(710, 10);
+        saveButton.Location = new Point(1395, 10);
         saveButton.Name = "saveButton";
-        saveButton.Size = new System.Drawing.Size(95, 26);
+        saveButton.Size = new Size(206, 57);
         saveButton.TabIndex = 7;
         saveButton.Text = "Save Layout";
         saveButton.UseVisualStyleBackColor = true;
@@ -114,9 +114,9 @@ partial class AudiLayoutForm
         // 
         // resizeButton
         // 
-        resizeButton.Location = new System.Drawing.Point(595, 10);
+        resizeButton.Location = new Point(1135, 10);
         resizeButton.Name = "resizeButton";
-        resizeButton.Size = new System.Drawing.Size(105, 26);
+        resizeButton.Size = new Size(216, 57);
         resizeButton.TabIndex = 6;
         resizeButton.Text = "Resize Grid";
         resizeButton.UseVisualStyleBackColor = true;
@@ -124,58 +124,58 @@ partial class AudiLayoutForm
         // 
         // colsNumeric
         // 
-        colsNumeric.Location = new System.Drawing.Point(520, 12);
+        colsNumeric.Location = new Point(1005, 20);
         colsNumeric.Maximum = new decimal(new int[] { 50, 0, 0, 0 });
         colsNumeric.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
         colsNumeric.Name = "colsNumeric";
-        colsNumeric.Size = new System.Drawing.Size(60, 23);
+        colsNumeric.Size = new Size(60, 39);
         colsNumeric.TabIndex = 5;
         colsNumeric.Value = new decimal(new int[] { 15, 0, 0, 0 });
         // 
         // colsLabel
         // 
         colsLabel.AutoSize = true;
-        colsLabel.Location = new System.Drawing.Point(460, 15);
+        colsLabel.Location = new Point(863, 22);
         colsLabel.Name = "colsLabel";
-        colsLabel.Size = new System.Drawing.Size(58, 15);
+        colsLabel.Size = new Size(113, 32);
         colsLabel.TabIndex = 4;
         colsLabel.Text = "Columns:";
         // 
         // rowsNumeric
         // 
-        rowsNumeric.Location = new System.Drawing.Point(390, 12);
+        rowsNumeric.Location = new Point(742, 20);
         rowsNumeric.Maximum = new decimal(new int[] { 40, 0, 0, 0 });
         rowsNumeric.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
         rowsNumeric.Name = "rowsNumeric";
-        rowsNumeric.Size = new System.Drawing.Size(60, 23);
+        rowsNumeric.Size = new Size(60, 39);
         rowsNumeric.TabIndex = 3;
         rowsNumeric.Value = new decimal(new int[] { 10, 0, 0, 0 });
         // 
         // rowsLabel
         // 
         rowsLabel.AutoSize = true;
-        rowsLabel.Location = new System.Drawing.Point(345, 15);
+        rowsLabel.Location = new Point(628, 22);
         rowsLabel.Name = "rowsLabel";
-        rowsLabel.Size = new System.Drawing.Size(38, 15);
+        rowsLabel.Size = new Size(73, 32);
         rowsLabel.TabIndex = 2;
         rowsLabel.Text = "Rows:";
         // 
         // audiComboBox
         // 
-        audiComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+        audiComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
         audiComboBox.FormattingEnabled = true;
-        audiComboBox.Location = new System.Drawing.Point(85, 12);
+        audiComboBox.Location = new Point(167, 15);
         audiComboBox.Name = "audiComboBox";
-        audiComboBox.Size = new System.Drawing.Size(240, 23);
+        audiComboBox.Size = new Size(436, 40);
         audiComboBox.TabIndex = 1;
         audiComboBox.SelectedIndexChanged += audiComboBox_SelectedIndexChanged;
         // 
         // audiLabel
         // 
         audiLabel.AutoSize = true;
-        audiLabel.Location = new System.Drawing.Point(12, 15);
+        audiLabel.Location = new Point(12, 15);
         audiLabel.Name = "audiLabel";
-        audiLabel.Size = new System.Drawing.Size(70, 15);
+        audiLabel.Size = new Size(139, 32);
         audiLabel.TabIndex = 0;
         audiLabel.Text = "Select Audi:";
         // 
@@ -186,29 +186,30 @@ partial class AudiLayoutForm
         toolBox.Controls.Add(assignClassRadio);
         toolBox.Controls.Add(markNonSeatRadio);
         toolBox.Controls.Add(markSeatRadio);
-        toolBox.Dock = System.Windows.Forms.DockStyle.Top;
-        toolBox.Location = new System.Drawing.Point(0, 80);
+        toolBox.Dock = DockStyle.Top;
+        toolBox.Location = new Point(0, 108);
         toolBox.Name = "toolBox";
-        toolBox.Size = new System.Drawing.Size(984, 50);
+        toolBox.Size = new Size(1914, 130);
         toolBox.TabIndex = 2;
         toolBox.TabStop = false;
         toolBox.Text = "Editing Action Tool (Apply to Selected Cells in Grid Below)";
         // 
         // classComboBox
         // 
-        classComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+        classComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
         classComboBox.FormattingEnabled = true;
-        classComboBox.Location = new System.Drawing.Point(375, 19);
+        classComboBox.Location = new Point(757, 79);
         classComboBox.Name = "classComboBox";
-        classComboBox.Size = new System.Drawing.Size(150, 23);
+        classComboBox.Size = new Size(283, 40);
         classComboBox.TabIndex = 4;
+        classComboBox.SelectedIndexChanged += classComboBox_SelectedIndexChanged;
         // 
         // toggleDamagedRadio
         // 
         toggleDamagedRadio.AutoSize = true;
-        toggleDamagedRadio.Location = new System.Drawing.Point(545, 20);
+        toggleDamagedRadio.Location = new Point(1120, 79);
         toggleDamagedRadio.Name = "toggleDamagedRadio";
-        toggleDamagedRadio.Size = new System.Drawing.Size(147, 19);
+        toggleDamagedRadio.Size = new Size(298, 36);
         toggleDamagedRadio.TabIndex = 3;
         toggleDamagedRadio.Text = "Toggle Damaged Status";
         toggleDamagedRadio.UseVisualStyleBackColor = true;
@@ -216,9 +217,9 @@ partial class AudiLayoutForm
         // assignClassRadio
         // 
         assignClassRadio.AutoSize = true;
-        assignClassRadio.Location = new System.Drawing.Point(240, 20);
+        assignClassRadio.Location = new Point(459, 79);
         assignClassRadio.Name = "assignClassRadio";
-        assignClassRadio.Size = new System.Drawing.Size(130, 19);
+        assignClassRadio.Size = new Size(260, 36);
         assignClassRadio.TabIndex = 2;
         assignClassRadio.Text = "Assign Seat Class ->";
         assignClassRadio.UseVisualStyleBackColor = true;
@@ -226,9 +227,9 @@ partial class AudiLayoutForm
         // markNonSeatRadio
         // 
         markNonSeatRadio.AutoSize = true;
-        markNonSeatRadio.Location = new System.Drawing.Point(115, 20);
+        markNonSeatRadio.Location = new Point(211, 79);
         markNonSeatRadio.Name = "markNonSeatRadio";
-        markNonSeatRadio.Size = new System.Drawing.Size(107, 19);
+        markNonSeatRadio.Size = new Size(208, 36);
         markNonSeatRadio.TabIndex = 1;
         markNonSeatRadio.Text = "Mark Non-Seat";
         markNonSeatRadio.UseVisualStyleBackColor = true;
@@ -237,9 +238,9 @@ partial class AudiLayoutForm
         // 
         markSeatRadio.AutoSize = true;
         markSeatRadio.Checked = true;
-        markSeatRadio.Location = new System.Drawing.Point(15, 20);
+        markSeatRadio.Location = new Point(24, 79);
         markSeatRadio.Name = "markSeatRadio";
-        markSeatRadio.Size = new System.Drawing.Size(79, 19);
+        markSeatRadio.Size = new Size(152, 36);
         markSeatRadio.TabIndex = 0;
         markSeatRadio.TabStop = true;
         markSeatRadio.Text = "Mark Seat";
@@ -247,38 +248,39 @@ partial class AudiLayoutForm
         // 
         // seatMapEditor
         // 
-        seatMapEditor.BackColor = System.Drawing.Color.FromArgb(240, 242, 245);
-        seatMapEditor.Dock = System.Windows.Forms.DockStyle.Fill;
-        seatMapEditor.Location = new System.Drawing.Point(0, 130);
+        seatMapEditor.BackColor = Color.FromArgb(240, 242, 245);
+        seatMapEditor.Dock = DockStyle.Fill;
+        seatMapEditor.Location = new Point(0, 238);
         seatMapEditor.Name = "seatMapEditor";
-        seatMapEditor.Size = new System.Drawing.Size(984, 400);
+        seatMapEditor.Size = new Size(1914, 878);
         seatMapEditor.TabIndex = 3;
         seatMapEditor.SelectionChanged += seatMapEditor_SelectionChanged;
         // 
         // statusStrip
         // 
-        statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { statusLabel });
-        statusStrip.Location = new System.Drawing.Point(0, 530);
+        statusStrip.ImageScalingSize = new Size(32, 32);
+        statusStrip.Items.AddRange(new ToolStripItem[] { statusLabel });
+        statusStrip.Location = new Point(0, 1116);
         statusStrip.Name = "statusStrip";
-        statusStrip.Size = new System.Drawing.Size(984, 22);
+        statusStrip.Size = new Size(1914, 42);
         statusStrip.TabIndex = 4;
         // 
         // statusLabel
         // 
         statusLabel.Name = "statusLabel";
-        statusLabel.Size = new System.Drawing.Size(39, 17);
+        statusLabel.Size = new Size(83, 32);
         statusLabel.Text = "Ready.";
         // 
         // AudiLayoutForm
         // 
-        ClientSize = new System.Drawing.Size(984, 552);
+        ClientSize = new Size(1914, 1158);
         Controls.Add(seatMapEditor);
         Controls.Add(statusStrip);
         Controls.Add(toolBox);
         Controls.Add(topPanel);
         Controls.Add(headerLabel);
         Name = "AudiLayoutForm";
-        StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+        StartPosition = FormStartPosition.CenterParent;
         Text = "Audi Seating Layout Management";
         Shown += AudiLayoutForm_Shown;
         topPanel.ResumeLayout(false);

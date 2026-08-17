@@ -270,4 +270,9 @@ internal partial class AudiLayoutForm : Form
         _seatClasses = await _layoutService.GetSeatClassesAsync();
         classComboBox.DataSource = _seatClasses.ToList();
     }
+
+    private void classComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    {
+
+    }
 }

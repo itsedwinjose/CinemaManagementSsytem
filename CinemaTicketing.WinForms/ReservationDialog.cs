@@ -109,4 +109,14 @@ internal partial class ReservationDialog : Form
         DialogResult = DialogResult.OK;
         Close();
     }
+
+    private void addressTextBox_TextChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    private void nameTextBox_TextChanged(object sender, EventArgs e)
+    {
+
+    }
 }

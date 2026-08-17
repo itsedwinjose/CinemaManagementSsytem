@@ -67,4 +67,9 @@ internal partial class PasswordChangeForm : Form
         DialogResult = DialogResult.OK;
         Close();
     }
+
+    private void currentPassTextBox_TextChanged(object sender, EventArgs e)
+    {
+
+    }
 }

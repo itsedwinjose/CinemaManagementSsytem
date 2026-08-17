@@ -228,4 +228,9 @@ internal partial class TheatreSettingsForm : Form
         public string ShowTime { get; init; } = string.Empty;
         public decimal Price { get; init; }
     }
+
+    private void showTypeLabel_Click(object sender, EventArgs e)
+    {
+
+    }
 }
