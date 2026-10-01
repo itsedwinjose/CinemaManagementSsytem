@@ -29,8 +29,12 @@ public sealed class CinemaSeatMapControl : Control
     [Browsable(false)]
     public IReadOnlySet<long> SelectedSeatIds => _selectedSeatIds;
 
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+    public bool AllowNonSeatSelection { get; set; }
+
     public event EventHandler? SelectionChanged;
     public event EventHandler<ScreeningSeat>? SeatClicked;
+    public event EventHandler<ScreeningSeat>? SeatDoubleClicked;
 
     public void LoadSeats(int totalRows, int totalCols, IEnumerable<ScreeningSeat> seats)
     {
@@ -64,53 +68,68 @@ public sealed class CinemaSeatMapControl : Control
         g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
         g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
 
-        if (_seats.Count == 0)
-        {
-            var font = AppFonts.BoldText;
-            using var brush = new SolidBrush(AppColors.TextMuted);
-            g.DrawString("No layout or screening selected.", font, brush, 20, 20);
-            return;
-        }
+        // Always render the grid based on configured rows/cols.
+        // If no seat data is available for a screening, cells will be
+        // treated as non-seat (empty) so the physical layout is still visible.
 
-        const float rowHeaderWidth = 25f;
         const float margin = 5f;
 
-        float availableW = Width - rowHeaderWidth - (margin * 2);
+        float availableW = Width - (margin * 2);
         float availableH = Height - (margin * 2);
 
         float cellW = Math.Max(15f, availableW / _totalCols);
         float cellH = Math.Max(15f, availableH / _totalRows);
 
-        var seatLookup = _seats.ToDictionary(s => (s.RowIndex, s.ColIndex));
+        var seatLookup = _seats
+            .GroupBy(s => (s.RowIndex, s.ColIndex))
+            .ToDictionary(g => g.Key, g => g.First());
 
         using var centerSf = new StringFormat { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
 
-        // 1. Draw Row Labels
-        var labelFont = AppFonts.SmallBold;
-        using (var labelBrush = new SolidBrush(AppColors.TextDark))
-        {
-            for (int r = 0; r < _totalRows; r++)
-            {
-                float y = margin + (r * cellH);
-                string rowName = ((char)('A' + (r % 26))).ToString();
-                g.DrawString(rowName, labelFont, labelBrush, new RectangleF(margin, y, rowHeaderWidth - 5, cellH), centerSf);
-            }
-        }
-
-        // 2. Draw Cells
+        // Draw Cells
         for (int r = 0; r < _totalRows; r++)
         {
             for (int c = 0; c < _totalCols; c++)
             {
-                float x = margin + rowHeaderWidth + (c * cellW);
+                float x = margin + (c * cellW);
                 float y = margin + (r * cellH);
                 var cellRect = new RectangleF(x + 1, y + 1, cellW - 2, cellH - 2);
 
-                if (!seatLookup.TryGetValue((r, c), out var seat) || !seat.IsSeat)
+                if (!seatLookup.TryGetValue((r, c), out var seat))
                 {
-                    // Non-seat cell
-                    using var nonSeatBrush = new SolidBrush(SeatStatusStyles.NonSeat);
+                    // Fallback seat object if no explicit entity exists in database
+                    char rName = (char)('A' + (r % 26));
+                    seat = new ScreeningSeat
+                    {
+                        Id = (r * 1000) + c + 1,
+                        RowIndex = r,
+                        ColIndex = c,
+                        IsSeat = true,
+                        RowLabel = rName.ToString(),
+                        SeatNumber = $"{rName}{c + 1}",
+                        Status = SeatStatus.Available
+                    };
+                }
+
+                if (!seat.IsSeat)
+                {
+                    // Explicit Non-seat cell (Stair / Empty Space)
+                    bool isSelectedNonSeat = _selectedSeatIds.Contains(seat.Id);
+                    using var nonSeatBrush = new SolidBrush(isSelectedNonSeat ? SeatStatusStyles.SelectionFill : SeatStatusStyles.NonSeat);
                     g.FillRectangle(nonSeatBrush, cellRect);
+
+                    using var nonSeatPen = new Pen(isSelectedNonSeat ? SeatStatusStyles.SelectionBorder : Color.FromArgb(0, 130, 200), isSelectedNonSeat ? 2f : 1f);
+                    g.DrawRectangle(nonSeatPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
+
+                    // Render seat.SeatNumber ONLY if explicitly set (e.g. Aisle Row Letter like 'A', 'B', 'D').
+                    // If seat.SeatNumber is empty, draw NOTHING (clean solid blue cell).
+                    if (!string.IsNullOrWhiteSpace(seat.SeatNumber) && cellW >= 14 && cellH >= 12)
+                    {
+                        var textColor = isSelectedNonSeat ? Color.Black : Color.White;
+                        using var textBrush = new SolidBrush(textColor);
+                        var font = cellW < 25 ? AppFonts.SmallText : AppFonts.SeatLabel;
+                        g.DrawString(seat.SeatNumber, font, textBrush, cellRect, centerSf);
+                    }
                     continue;
                 }
 
@@ -185,7 +204,7 @@ public sealed class CinemaSeatMapControl : Control
             if (_dragRect.Width < 5 && _dragRect.Height < 5)
             {
                 // Single Click
-                var seat = HitTestSeat(e.Location);
+                var seat = HitTestSeat(_dragStartPoint) ?? HitTestSeat(e.Location);
                 if (seat is not null)
                 {
                     ToggleSeatSelection(seat);
@@ -204,23 +223,57 @@ public sealed class CinemaSeatMapControl : Control
         }
     }
 
+    protected override void OnMouseDoubleClick(MouseEventArgs e)
+    {
+        base.OnMouseDoubleClick(e);
+        if (e.Button == MouseButtons.Left)
+        {
+            var seat = HitTestSeat(e.Location);
+            if (seat is not null)
+            {
+                SeatDoubleClicked?.Invoke(this, seat);
+            }
+        }
+    }
+
     private ScreeningSeat? HitTestSeat(Point p)
     {
-        const float rowHeaderWidth = 25f;
         const float margin = 5f;
 
-        float availableW = Width - rowHeaderWidth - (margin * 2);
+        if (p.X < margin || p.Y < margin)
+        {
+            return null;
+        }
+
+        float availableW = Width - (margin * 2);
         float availableH = Height - (margin * 2);
+
+        if (availableW <= 0 || availableH <= 0) return null;
 
         float cellW = Math.Max(15f, availableW / _totalCols);
         float cellH = Math.Max(15f, availableH / _totalRows);
 
-        int col = (int)((p.X - margin - rowHeaderWidth) / cellW);
+        int col = (int)((p.X - margin) / cellW);
         int row = (int)((p.Y - margin) / cellH);
 
         if (row >= 0 && row < _totalRows && col >= 0 && col < _totalCols)
         {
-            return _seats.FirstOrDefault(s => s.RowIndex == row && s.ColIndex == col);
+            var seat = _seats.FirstOrDefault(s => s.RowIndex == row && s.ColIndex == col);
+            if (seat is null)
+            {
+                char rName = (char)('A' + (row % 26));
+                seat = new ScreeningSeat
+                {
+                    Id = (row * 1000) + col + 1,
+                    RowIndex = row,
+                    ColIndex = col,
+                    IsSeat = true,
+                    RowLabel = rName.ToString(),
+                    SeatNumber = $"{rName}{col + 1}",
+                    Status = SeatStatus.Available
+                };
+            }
+            return seat;
         }
 
         return null;
@@ -228,7 +281,12 @@ public sealed class CinemaSeatMapControl : Control
 
     private void ToggleSeatSelection(ScreeningSeat seat)
     {
-        if (!seat.IsSeat || seat.IsDamaged || seat.Status != SeatStatus.Available)
+        if (seat.IsDamaged || seat.Status == SeatStatus.Sold)
+        {
+            return;
+        }
+
+        if (!seat.IsSeat && !AllowNonSeatSelection)
         {
             return;
         }
@@ -241,35 +299,40 @@ public sealed class CinemaSeatMapControl : Control
 
     private void SelectSeatsInRectangle(Rectangle rect)
     {
+        var rectF = (RectangleF)rect;
         foreach (var seat in _seats)
         {
-            if (!seat.IsSeat || seat.IsDamaged || seat.Status != SeatStatus.Available)
+            if (seat.IsDamaged || seat.Status == SeatStatus.Sold)
             {
                 continue;
             }
 
-            var pt = GetSeatCenterPoint(seat);
-            if (rect.Contains(pt))
+            if (!seat.IsSeat && !AllowNonSeatSelection)
+            {
+                continue;
+            }
+
+            var cellRect = GetSeatRectangle(seat.RowIndex, seat.ColIndex);
+            if (rectF.IntersectsWith(cellRect))
             {
                 _selectedSeatIds.Add(seat.Id);
             }
         }
     }
 
-    private Point GetSeatCenterPoint(ScreeningSeat seat)
+    private RectangleF GetSeatRectangle(int rowIndex, int colIndex)
     {
-        const float rowHeaderWidth = 25f;
         const float margin = 5f;
 
-        float availableW = Width - rowHeaderWidth - (margin * 2);
+        float availableW = Width - (margin * 2);
         float availableH = Height - (margin * 2);
 
         float cellW = Math.Max(15f, availableW / _totalCols);
         float cellH = Math.Max(15f, availableH / _totalRows);
 
-        float cx = margin + rowHeaderWidth + (seat.ColIndex * cellW) + (cellW / 2);
-        float cy = margin + (seat.RowIndex * cellH) + (cellH / 2);
+        float x = margin + (colIndex * cellW);
+        float y = margin + (rowIndex * cellH);
 
-        return new Point((int)cx, (int)cy);
+        return new RectangleF(x + 1, y + 1, cellW - 2, cellH - 2);
     }
 }

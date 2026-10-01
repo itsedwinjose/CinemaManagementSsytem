@@ -17,6 +17,10 @@ public sealed class BookingService(
 
         foreach (var seat in request.SelectedSeats)
         {
+            if (!seat.IsSeat)
+            {
+                return new BookingResult(false, "Non-seat / stair space cannot be booked.");
+            }
             if (seat.IsDamaged)
             {
                 return new BookingResult(false, $"Seat {seat.SeatNumber} is damaged and cannot be booked.");

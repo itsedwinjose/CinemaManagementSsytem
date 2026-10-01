@@ -4,7 +4,7 @@ namespace CinemaTicketing.WinForms.UI.Design;
 
 public static class SeatStatusStyles
 {
-    public static readonly Color NonSeat = Color.FromArgb(0, 162, 232); // Vibrant Ocean Blue
+    public static readonly Color NonSeat = Color.FromArgb(0, 162, 232); // Vibrant Ocean Blue matching reference photo
     public static readonly Color Available = Color.White;
     public static readonly Color Sold = Color.FromArgb(245, 146, 30); // Orange / Gold
     public static readonly Color OnlineBooking = Color.FromArgb(16, 124, 65); // Bright Green

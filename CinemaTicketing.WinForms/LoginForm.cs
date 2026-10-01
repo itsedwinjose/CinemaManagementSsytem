@@ -1,4 +1,5 @@
 using CinemaTicketing.Core.Entities;
+using CinemaTicketing.Core.Security;
 using CinemaTicketing.Core.Services;
 
 namespace CinemaTicketing.WinForms;
@@ -58,6 +59,8 @@ internal partial class LoginForm : Form
 
     private void LoginForm_Load(object sender, EventArgs e)
     {
-
+       // PasswordHasher ph = new PasswordHasher();
+       // userNameTextBox.Text = ph.HashPassword("1234").ToString();
+        //Console.WriteLine(ph.HashPassword("1234"));
     }
 }

@@ -33,32 +33,105 @@ WHERE ts.cinema_id = @cinemaId;
             }
         }
 
+        if (settings.Count == 0)
+        {
+            const string seedTsSql = """
+INSERT IGNORE INTO theatre_settings (cinema_id, show_type_id, show_time, price) VALUES
+(@cinemaId, 1, '10:00:00', 150.00),
+(@cinemaId, 2, '14:00:00', 150.00),
+(@cinemaId, 3, '18:00:00', 150.00),
+(@cinemaId, 4, '21:00:00', 150.00);
+""";
+            await using (var seedCmd = connection.CreateCommand())
+            {
+                seedCmd.CommandText = seedTsSql;
+                AddParameter(seedCmd, "@cinemaId", cinemaId);
+                await seedCmd.ExecuteNonQueryAsync(cancellationToken);
+            }
+
+            await using var reTsCmd = connection.CreateCommand();
+            reTsCmd.CommandText = tsSql;
+            AddParameter(reTsCmd, "@cinemaId", cinemaId);
+            await using (var reader = await reTsCmd.ExecuteReaderAsync(cancellationToken))
+            {
+                while (await reader.ReadAsync(cancellationToken))
+                {
+                    settings.Add((reader.GetInt64(0), reader.GetInt64(1), reader.GetFieldValue<TimeSpan>(2), reader.GetDecimal(3), reader.GetInt64(4)));
+                }
+            }
+        }
+
         foreach (var st in settings)
         {
-            // Insert screening if not existing
-            const string insertScrSql = """
+            long screeningId;
+            const string findScrSql = """
+SELECT id FROM screenings
+WHERE cinema_id = @cinemaId AND audi_id = @audiId AND show_type_id = @showTypeId AND show_time = @showTime AND screening_date = @screeningDate;
+""";
+            await using (var findCmd = connection.CreateCommand())
+            {
+                findCmd.CommandText = findScrSql;
+                AddParameter(findCmd, "@cinemaId", cinemaId);
+                AddParameter(findCmd, "@audiId", st.AudiId);
+                AddParameter(findCmd, "@showTypeId", st.ShowTypeId);
+                AddParameter(findCmd, "@showTime", st.ShowTime);
+                AddParameter(findCmd, "@screeningDate", date.ToDateTime(TimeOnly.MinValue));
+
+                var existingIdObj = await findCmd.ExecuteScalarAsync(cancellationToken);
+                if (existingIdObj is not null && existingIdObj != DBNull.Value)
+                {
+                    screeningId = Convert.ToInt64(existingIdObj);
+                }
+                else
+                {
+                    const string insertScrSql = """
 INSERT INTO screenings (cinema_id, audi_id, show_type_id, show_time, screening_date)
-VALUES (@cinemaId, @audiId, @showTypeId, @showTime, @screeningDate)
-ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id);
+VALUES (@cinemaId, @audiId, @showTypeId, @showTime, @screeningDate);
 SELECT LAST_INSERT_ID();
 """;
-            await using var scrCmd = connection.CreateCommand();
-            scrCmd.CommandText = insertScrSql;
-            AddParameter(scrCmd, "@cinemaId", cinemaId);
-            AddParameter(scrCmd, "@audiId", st.AudiId);
-            AddParameter(scrCmd, "@showTypeId", st.ShowTypeId);
-            AddParameter(scrCmd, "@showTime", st.ShowTime);
-            AddParameter(scrCmd, "@screeningDate", date.ToDateTime(TimeOnly.MinValue));
+                    await using var scrCmd = connection.CreateCommand();
+                    scrCmd.CommandText = insertScrSql;
+                    AddParameter(scrCmd, "@cinemaId", cinemaId);
+                    AddParameter(scrCmd, "@audiId", st.AudiId);
+                    AddParameter(scrCmd, "@showTypeId", st.ShowTypeId);
+                    AddParameter(scrCmd, "@showTime", st.ShowTime);
+                    AddParameter(scrCmd, "@screeningDate", date.ToDateTime(TimeOnly.MinValue));
 
-            var screeningIdObj = await scrCmd.ExecuteScalarAsync(cancellationToken);
-            var screeningId = Convert.ToInt64(screeningIdObj);
+                    var newIdObj = await scrCmd.ExecuteScalarAsync(cancellationToken);
+                    screeningId = Convert.ToInt64(newIdObj);
+                }
+            }
+
+            // Ensure audi_layout_cells exist for st.AudiId
+            const string checkCellsSql = "SELECT COUNT(*) FROM audi_layout_cells WHERE audi_id = @audiId;";
+            await using (var checkCmd = connection.CreateCommand())
+            {
+                checkCmd.CommandText = checkCellsSql;
+                AddParameter(checkCmd, "@audiId", st.AudiId);
+                var cellCount = Convert.ToInt32(await checkCmd.ExecuteScalarAsync(cancellationToken));
+                if (cellCount == 0)
+                {
+                    const string genCellsSql = """
+INSERT IGNORE INTO audi_layout_cells (audi_id, row_index, col_index, is_seat, row_label, seat_number)
+SELECT @audiId, r.r, c.c, 1,
+       CHAR(65 + r.r),
+       CONCAT(CHAR(65 + r.r), c.c + 1)
+FROM (SELECT 0 AS r UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9) r
+CROSS JOIN (SELECT 0 AS c UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12 UNION SELECT 13 UNION SELECT 14) c;
+""";
+                    await using var genCmd = connection.CreateCommand();
+                    genCmd.CommandText = genCellsSql;
+                    AddParameter(genCmd, "@audiId", st.AudiId);
+                    await genCmd.ExecuteNonQueryAsync(cancellationToken);
+                }
+            }
 
             // Populate screening_seats from audi_layout_cells
             const string populateSeatsSql = """
 INSERT IGNORE INTO screening_seats (screening_id, audi_layout_cell_id, status)
 SELECT @screeningId, alc.id, 'AVAILABLE'
 FROM audi_layout_cells alc
-WHERE alc.audi_id = @audiId AND alc.is_seat = 1;
+WHERE alc.audi_id = @audiId;
 """;
             await using var seatsCmd = connection.CreateCommand();
             seatsCmd.CommandText = populateSeatsSql;
@@ -228,16 +301,26 @@ WHERE s2.id = @screeningId;
     public async Task<IReadOnlyList<ScreeningSeat>> GetScreeningSeatsAsync(long screeningId, CancellationToken cancellationToken = default)
     {
         const string sql = """
-SELECT ss.id, ss.screening_id, ss.audi_layout_cell_id, alc.row_index, alc.col_index, alc.is_seat,
-       alc.row_label, alc.seat_number, alc.seat_class_id, COALESCE(sc.name, ''), alc.is_damaged,
-       ss.status, COALESCE(scp.price, ts.price, 0) AS calculated_price
-FROM screening_seats ss
-INNER JOIN screenings s ON s.id = ss.screening_id
-INNER JOIN audi_layout_cells alc ON alc.id = ss.audi_layout_cell_id
+SELECT COALESCE(ss.id, (alc.row_index * 1000 + alc.col_index + 1)) AS id,
+       s.id AS screening_id,
+       alc.id AS audi_layout_cell_id,
+       alc.row_index,
+       alc.col_index,
+       alc.is_seat,
+       alc.row_label,
+       alc.seat_number,
+       alc.seat_class_id,
+       COALESCE(sc.name, '') AS seat_class_name,
+       alc.is_damaged,
+       COALESCE(ss.status, 'AVAILABLE') AS status,
+       COALESCE(scp.price, ts.price, 0) AS calculated_price
+FROM audi_layout_cells alc
+INNER JOIN screenings s ON s.id = @screeningId AND alc.audi_id = s.audi_id
+LEFT JOIN screening_seats ss ON ss.screening_id = s.id AND ss.audi_layout_cell_id = alc.id
 LEFT JOIN seat_classes sc ON sc.id = alc.seat_class_id
 LEFT JOIN theatre_settings ts ON ts.cinema_id = s.cinema_id AND ts.show_type_id = s.show_type_id AND ts.show_time = s.show_time
 LEFT JOIN show_class_prices scp ON scp.theatre_setting_id = ts.id AND scp.seat_class_id = alc.seat_class_id
-WHERE ss.screening_id = @screeningId
+WHERE s.id = @screeningId
 ORDER BY alc.row_index, alc.col_index;
 """;
 

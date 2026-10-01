@@ -35,4 +35,5 @@ public sealed class PasswordHasher : IPasswordHasher
 
         return CryptographicOperations.FixedTimeEquals(computedHash, expectedHash);
     }
+
 }

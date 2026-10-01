@@ -71,6 +71,7 @@ internal partial class MainForm : Form
     {
         legendFlowPanel.Controls.Clear();
 
+        AddLegendItem("Empty / Stair", SeatStatusStyles.NonSeat);
         AddLegendItem("Online Block", SeatStatusStyles.OnlineBlocked);
         AddLegendItem("Family", SeatStatusStyles.Family);
         AddLegendItem("Seat Damaged", SeatStatusStyles.Damaged);
@@ -166,14 +167,13 @@ internal partial class MainForm : Form
 
         _currentScreenings = allScreenings.Where(s => s.AudiId == selectedAudi.Id).ToList();
 
+        showComboBox.DisplayMember = "Display";
+        showComboBox.ValueMember = "Screening";
         showComboBox.DataSource = _currentScreenings.Select(s => new
         {
             Screening = s,
             Display = $"{s.ShowTypeName} - {DateTime.Today.Add(s.ShowTime):hh:mm tt} [{s.MovieName}]"
         }).ToList();
-
-        showComboBox.DisplayMember = "Display";
-        showComboBox.ValueMember = "Screening";
 
         if (_currentScreenings.Count > 0)
         {
@@ -183,11 +183,55 @@ internal partial class MainForm : Form
         else
         {
             _selectedScreening = null;
-            _currentSeats = Array.Empty<ScreeningSeat>();
-            seatMap.LoadSeats(selectedAudi.TotalRows, selectedAudi.TotalCols, _currentSeats);
+            await LoadFallbackAudiSeatsAsync(selectedAudi);
             UpdateShowInfoLabels();
             UpdateStatistics();
         }
+    }
+
+    private async Task LoadFallbackAudiSeatsAsync(Audi audi)
+    {
+        var cells = await _audiLayoutRepository.GetCellsForAudiAsync(audi.Id);
+        if (cells.Count == 0)
+        {
+            var defaultSeats = new List<ScreeningSeat>();
+            for (int r = 0; r < audi.TotalRows; r++)
+            {
+                char rChar = (char)('A' + (r % 26));
+                for (int c = 0; c < audi.TotalCols; c++)
+                {
+                    defaultSeats.Add(new ScreeningSeat
+                    {
+                        Id = (r * 1000) + c + 1,
+                        RowIndex = r,
+                        ColIndex = c,
+                        IsSeat = true,
+                        RowLabel = rChar.ToString(),
+                        SeatNumber = $"{rChar}{c + 1}",
+                        Status = SeatStatus.Available
+                    });
+                }
+            }
+            _currentSeats = defaultSeats;
+        }
+        else
+        {
+            _currentSeats = cells.Select(c => new ScreeningSeat
+            {
+                Id = c.Id > 0 ? c.Id : (c.RowIndex * 1000 + c.ColIndex + 1),
+                RowIndex = c.RowIndex,
+                ColIndex = c.ColIndex,
+                IsSeat = c.IsSeat,
+                RowLabel = c.RowLabel,
+                SeatNumber = c.SeatNumber,
+                SeatClassId = c.SeatClassId,
+                SeatClassName = c.SeatClassName,
+                IsDamaged = c.IsDamaged,
+                Status = SeatStatus.Available
+            }).ToList();
+        }
+
+        seatMap.LoadSeats(audi.TotalRows, audi.TotalCols, _currentSeats);
     }
 
     private async void showComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -212,7 +256,15 @@ internal partial class MainForm : Form
             audiHeaderLabel.Text = audi.Name;
         }
 
-        seatMap.LoadSeats(rows, cols, _currentSeats);
+        if (_currentSeats.Count == 0 && audi is not null)
+        {
+            await LoadFallbackAudiSeatsAsync(audi);
+        }
+        else
+        {
+            seatMap.LoadSeats(rows, cols, _currentSeats);
+        }
+
         UpdateShowInfoLabels();
         UpdateStatistics();
     }

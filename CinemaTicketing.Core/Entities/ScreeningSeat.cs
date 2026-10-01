@@ -9,7 +9,7 @@ public sealed class ScreeningSeat
     public long AudiLayoutCellId { get; init; }
     public int RowIndex { get; init; }
     public int ColIndex { get; init; }
-    public bool IsSeat { get; init; }
+    public bool IsSeat { get; init; } = true;
     public string RowLabel { get; init; } = string.Empty;
     public string SeatNumber { get; init; } = string.Empty;
     public long? SeatClassId { get; init; }
