@@ -1,0 +1,2 @@
+ALTER TABLE cashout_records ADD COLUMN audi_id BIGINT NULL;
+ALTER TABLE cashout_records ADD COLUMN audi_name VARCHAR(100) NOT NULL DEFAULT '';

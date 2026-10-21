@@ -42,6 +42,7 @@ public class ThermalPrintServiceTests
         var cinema = new CinemaInfo { Name = "Star Multiplex" };
         var record = new CashoutRecord
         {
+            AudiName = "Audi-2",
             ShowDate = new DateOnly(2026, 8, 11),
             ShowTime = new TimeSpan(11, 0, 0),
             ShowTypeName = "Morning Show",
@@ -61,6 +62,7 @@ public class ThermalPrintServiceTests
         var text = ThermalPrintService.BuildCashoutReportText(record, cinema);
 
         Assert.Contains("CASHOUT REPORT", text);
+        Assert.Contains("Audi: Audi-2", text);
         Assert.Contains("Morning Show", text);
         Assert.Contains("Oppenheimer", text);
         Assert.Contains("7550.00", text);

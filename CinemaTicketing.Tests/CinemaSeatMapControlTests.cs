@@ -1,6 +1,7 @@
 using CinemaTicketing.Core.Entities;
 using CinemaTicketing.Core.Enums;
 using CinemaTicketing.WinForms.Controls;
+using CinemaTicketing.WinForms.UI.Design;
 
 namespace CinemaTicketing.Tests;
 
@@ -27,5 +28,21 @@ public class CinemaSeatMapControlTests
     {
         var control = new CinemaSeatMapControl();
         Assert.False(control.AllowNonSeatSelection);
+    }
+
+    [Fact]
+    public void TelephoneReservedSeatStatusUsesTelephoneReservedColor()
+    {
+        Assert.Equal(
+            SeatStatusStyles.TelephoneReserved,
+            SeatStatusStyles.GetStatusColor(SeatStatus.TelephoneReserved, isDamaged: false));
+    }
+
+    [Fact]
+    public void FreeTicketSeatStatusUsesFreeTicketColor()
+    {
+        Assert.Equal(
+            SeatStatusStyles.FreeTicket,
+            SeatStatusStyles.GetStatusColor(SeatStatus.FreeTicket, isDamaged: false));
     }
 }

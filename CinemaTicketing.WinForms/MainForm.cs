@@ -482,7 +482,7 @@ internal partial class MainForm : Form
 
     private void accountsButton_Click(object sender, EventArgs e)
     {
-        using var form = new AccountsForm(_cashoutService, _theatreSettingsService, _cinemaRepository, _printService, _currentUser, _cinemaId);
+        using var form = new AccountsForm(_cashoutService, _audiRepository, _cinemaRepository, _printService, _currentUser, _cinemaId);
         form.ShowDialog(this);
     }
 

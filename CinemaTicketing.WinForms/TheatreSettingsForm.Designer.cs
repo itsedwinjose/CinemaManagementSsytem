@@ -9,8 +9,6 @@ partial class TheatreSettingsForm
 
     // Top Input Bar
     private System.Windows.Forms.Panel topInputsPanel;
-    private System.Windows.Forms.Label cinemaLabel;
-    private System.Windows.Forms.ComboBox cinemaComboBox;
     private System.Windows.Forms.Label showTypeLabel;
     private System.Windows.Forms.ComboBox showTypeComboBox;
     private System.Windows.Forms.Label showTimeLabel;
@@ -21,7 +19,6 @@ partial class TheatreSettingsForm
 
     // Left Main Grid
     private System.Windows.Forms.DataGridView settingsGrid;
-    private System.Windows.Forms.DataGridViewTextBoxColumn theatreColumn;
     private System.Windows.Forms.DataGridViewTextBoxColumn showTypeColumn;
     private System.Windows.Forms.DataGridViewTextBoxColumn showTimeColumn;
     private System.Windows.Forms.DataGridViewTextBoxColumn priceColumn;
@@ -65,8 +62,6 @@ partial class TheatreSettingsForm
         headerPanel = new Panel();
         headerTitleLabel = new Label();
         topInputsPanel = new Panel();
-        cinemaLabel = new Label();
-        cinemaComboBox = new ComboBox();
         showTypeLabel = new Label();
         showTypeComboBox = new ComboBox();
         showTimeLabel = new Label();
@@ -75,7 +70,6 @@ partial class TheatreSettingsForm
         priceNumericUpDown = new NumericUpDown();
         saveButton = new Button();
         settingsGrid = new DataGridView();
-        theatreColumn = new DataGridViewTextBoxColumn();
         showTypeColumn = new DataGridViewTextBoxColumn();
         showTimeColumn = new DataGridViewTextBoxColumn();
         priceColumn = new DataGridViewTextBoxColumn();
@@ -135,8 +129,6 @@ partial class TheatreSettingsForm
         // topInputsPanel
         // 
         topInputsPanel.BackColor = Color.FromArgb(220, 238, 245);
-        topInputsPanel.Controls.Add(cinemaLabel);
-        topInputsPanel.Controls.Add(cinemaComboBox);
         topInputsPanel.Controls.Add(showTypeLabel);
         topInputsPanel.Controls.Add(showTypeComboBox);
         topInputsPanel.Controls.Add(showTimeLabel);
@@ -150,24 +142,7 @@ partial class TheatreSettingsForm
         topInputsPanel.Size = new Size(1870, 132);
         topInputsPanel.TabIndex = 1;
         // 
-        // cinemaLabel
         // 
-        cinemaLabel.AutoSize = true;
-        cinemaLabel.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
-        cinemaLabel.Location = new Point(82, 6);
-        cinemaLabel.Name = "cinemaLabel";
-        cinemaLabel.Size = new Size(164, 31);
-        cinemaLabel.TabIndex = 0;
-        cinemaLabel.Text = "Theatre Name";
-        // 
-        // cinemaComboBox
-        // 
-        cinemaComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-        cinemaComboBox.FormattingEnabled = true;
-        cinemaComboBox.Location = new Point(82, 58);
-        cinemaComboBox.Name = "cinemaComboBox";
-        cinemaComboBox.Size = new Size(277, 40);
-        cinemaComboBox.TabIndex = 1;
         // 
         // showTypeLabel
         // 
@@ -248,7 +223,7 @@ partial class TheatreSettingsForm
         settingsGrid.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         settingsGrid.BackgroundColor = Color.White;
         settingsGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-        settingsGrid.Columns.AddRange(new DataGridViewColumn[] { theatreColumn, showTypeColumn, showTimeColumn, priceColumn, editButtonColumn, deleteButtonColumn });
+        settingsGrid.Columns.AddRange(new DataGridViewColumn[] { showTypeColumn, showTimeColumn, priceColumn, editButtonColumn, deleteButtonColumn });
         settingsGrid.Dock = DockStyle.Fill;
         settingsGrid.Location = new Point(0, 168);
         settingsGrid.MultiSelect = false;
@@ -260,13 +235,6 @@ partial class TheatreSettingsForm
         settingsGrid.TabIndex = 2;
         settingsGrid.CellContentClick += settingsGrid_CellContentClick;
         // 
-        // theatreColumn
-        // 
-        theatreColumn.DataPropertyName = "Theatre";
-        theatreColumn.HeaderText = "Theatre";
-        theatreColumn.MinimumWidth = 10;
-        theatreColumn.Name = "theatreColumn";
-        theatreColumn.ReadOnly = true;
         // 
         // showTypeColumn
         // 

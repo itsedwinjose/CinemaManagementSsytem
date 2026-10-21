@@ -72,8 +72,72 @@ public class BookingServiceTests
 
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Booking);
+        Assert.Equal(BookingType.FreeTicket, result.Booking.BookingType);
         Assert.Equal(0m, result.Booking.TicketAmount);
+        Assert.Equal(0m, result.Booking.ReservationAmount);
+        Assert.Equal(0m, result.Booking.ThreeDAmount);
         Assert.Equal(0m, result.Booking.TotalAmount);
+        Assert.All(result.Booking.Seats, seat => Assert.Equal(0m, seat.Price));
+    }
+
+    [Fact]
+    public async Task ProcessBookingAsync_CounterReservation_PreservesBookingTypeAndPaymentMode()
+    {
+        var bookingRepo = new StubBookingRepository();
+        var settingRepo = new StubSettingRepository();
+        var service = new BookingService(bookingRepo, settingRepo);
+        var request = new BookingRequest(
+            ScreeningId: 1,
+            UserId: 1,
+            BookingType: BookingType.CounterReservation,
+            PaymentMode: PaymentMode.Card,
+            CustomerName: "Guest",
+            CustomerPhone: "",
+            CustomerAddress: "",
+            ApplyReservationCharge: false,
+            Apply3DCharge: false,
+            SelectedSeats: new List<ScreeningSeat>
+            {
+                new() { Id = 1, SeatNumber = "A1", Price = 150m, Status = SeatStatus.Available }
+            }
+        );
+
+        var result = await service.ProcessBookingAsync(request);
+
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Booking);
+        Assert.Equal(BookingType.CounterReservation, result.Booking.BookingType);
+        Assert.Equal(PaymentMode.Card, result.Booking.PaymentMode);
+    }
+
+    [Fact]
+    public async Task ProcessBookingAsync_TelephoneReservation_PreservesBookingTypeAndPaymentMode()
+    {
+        var bookingRepo = new StubBookingRepository();
+        var settingRepo = new StubSettingRepository();
+        var service = new BookingService(bookingRepo, settingRepo);
+        var request = new BookingRequest(
+            ScreeningId: 1,
+            UserId: 1,
+            BookingType: BookingType.TelephoneReservation,
+            PaymentMode: PaymentMode.UpiQr,
+            CustomerName: "Guest",
+            CustomerPhone: "1234567890",
+            CustomerAddress: "",
+            ApplyReservationCharge: false,
+            Apply3DCharge: false,
+            SelectedSeats: new List<ScreeningSeat>
+            {
+                new() { Id = 1, SeatNumber = "A1", Price = 150m, Status = SeatStatus.Available }
+            }
+        );
+
+        var result = await service.ProcessBookingAsync(request);
+
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Booking);
+        Assert.Equal(BookingType.TelephoneReservation, result.Booking.BookingType);
+        Assert.Equal(PaymentMode.UpiQr, result.Booking.PaymentMode);
     }
 
     [Fact]

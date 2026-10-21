@@ -9,6 +9,7 @@ internal partial class TheatreSettingsForm : Form
     private IReadOnlyList<CinemaInfo> _cinemas = Array.Empty<CinemaInfo>();
     private IReadOnlyList<ShowType> _showTypes = Array.Empty<ShowType>();
     private long? _editingId;
+    private long _selectedCinemaId = 0;
 
     public TheatreSettingsForm(ITheatreSettingsService theatreSettingsService)
     {
@@ -64,7 +65,7 @@ internal partial class TheatreSettingsForm : Form
         if (settingsGrid.Columns[e.ColumnIndex].Name == "editButtonColumn")
         {
             _editingId = item.Id;
-            cinemaComboBox.SelectedValue = item.CinemaId;
+            _selectedCinemaId = item.CinemaId;
             showTypeComboBox.SelectedValue = item.ShowTypeId;
             showTimeTextBox.Text = item.ShowTime;
             priceNumericUpDown.Value = item.Price;
@@ -134,9 +135,8 @@ internal partial class TheatreSettingsForm : Form
         _cinemas = await _theatreSettingsService.GetCinemasAsync();
         _showTypes = await _theatreSettingsService.GetShowTypesAsync();
 
-        cinemaComboBox.DataSource = _cinemas.ToList();
-        cinemaComboBox.DisplayMember = nameof(CinemaInfo.Name);
-        cinemaComboBox.ValueMember = nameof(CinemaInfo.Id);
+        // single-theatre: keep selected cinema id as first available cinema (if any)
+        _selectedCinemaId = _cinemas.FirstOrDefault()?.Id ?? 0;
 
         showTypeComboBox.DataSource = _showTypes.ToList();
         showTypeComboBox.DisplayMember = nameof(ShowType.Name);
@@ -146,7 +146,7 @@ internal partial class TheatreSettingsForm : Form
     private async Task LoadGridAsync()
     {
         var items = await _theatreSettingsService.GetSettingsAsync();
-        settingsGrid.AutoGenerateColumns = false;
+            settingsGrid.AutoGenerateColumns = false;
         settingsGrid.DataSource = items.Select(x => new TheatreSettingGridItem
         {
             Id = x.Id,
@@ -179,10 +179,10 @@ internal partial class TheatreSettingsForm : Form
 
             var request = new TheatreSettingSaveRequest(
                 _editingId,
-                cinemaComboBox.SelectedValue is long cinemaId ? cinemaId : 0,
-                showTypeComboBox.SelectedValue is long showTypeId ? showTypeId : 0,
-                showTime,
-                priceNumericUpDown.Value);
+                    _selectedCinemaId,
+                    showTypeComboBox.SelectedValue is long showTypeId ? showTypeId : 0,
+                    showTime,
+                    priceNumericUpDown.Value);
 
             var result = await _theatreSettingsService.SaveAsync(request);
             statusLabel.Text = result.Message;
@@ -205,10 +205,8 @@ internal partial class TheatreSettingsForm : Form
     private void ResetForm()
     {
         _editingId = null;
-        if (cinemaComboBox.Items.Count > 0)
-        {
-            cinemaComboBox.SelectedIndex = 0;
-        }
+        // Reset selected cinema id to first available (single-theatre scenario)
+        _selectedCinemaId = _cinemas.FirstOrDefault()?.Id ?? 0;
         if (showTypeComboBox.Items.Count > 0)
         {
             showTypeComboBox.SelectedIndex = 0;

@@ -22,6 +22,8 @@ public sealed class CashoutService(
         var recordToSave = new CashoutRecord
         {
             CinemaId = record.CinemaId,
+            AudiId = record.AudiId,
+            AudiName = record.AudiName,
             ShowDate = record.ShowDate,
             ShowTime = record.ShowTime,
             ShowTypeName = record.ShowTypeName,

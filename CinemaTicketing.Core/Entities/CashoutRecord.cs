@@ -4,6 +4,8 @@ public sealed class CashoutRecord
 {
     public long Id { get; init; }
     public long CinemaId { get; init; }
+    public long? AudiId { get; init; }
+    public string AudiName { get; init; } = string.Empty;
     public DateOnly ShowDate { get; init; }
     public TimeSpan ShowTime { get; init; }
     public string ShowTypeName { get; init; } = string.Empty;

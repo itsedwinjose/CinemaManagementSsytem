@@ -21,7 +21,7 @@ public sealed class ThermalPrintService : IThermalPrintService
     public Task<bool> PrintCashoutReportAsync(CashoutRecord record, CinemaInfo cinema, string printerName)
     {
         var text = BuildCashoutReportText(record, cinema);
-        return Task.FromResult(SendToPrinter(text, printerName, "Cashout Report"));
+        return Task.FromResult(SendToPrinter(text, printerName, "Cashout Report", scaleToPrintableArea: true, showPrinterDialog: true));
     }
 
     public static string BuildTicketText(Booking booking, CinemaInfo cinema, Screening screening)
@@ -67,6 +67,7 @@ public sealed class ThermalPrintService : IThermalPrintService
         sb.AppendLine("========================================");
         sb.AppendLine("             CASHOUT REPORT             ");
         sb.AppendLine($"Cinema: {cinema.Name}");
+        sb.AppendLine($"Audi: {record.AudiName}");
         sb.AppendLine($"Cashed Out At: {record.CashedOutAt:dd-MMM-yyyy hh:mm tt}");
         sb.AppendLine($"Cashed Out By: {record.CashedOutBy}");
         sb.AppendLine("========================================");
@@ -93,7 +94,12 @@ public sealed class ThermalPrintService : IThermalPrintService
         return sb.ToString();
     }
 
-    private static bool SendToPrinter(string printText, string printerName, string documentName)
+    private static bool SendToPrinter(
+        string printText,
+        string printerName,
+        string documentName,
+        bool scaleToPrintableArea = false,
+        bool showPrinterDialog = false)
     {
         try
         {
@@ -103,16 +109,49 @@ public sealed class ThermalPrintService : IThermalPrintService
                 pd.PrinterSettings.PrinterName = printerName;
             }
 
+            if (showPrinterDialog)
+            {
+                using var printDialog = new PrintDialog
+                {
+                    Document = pd,
+                    UseEXDialog = true
+                };
+                if (printDialog.ShowDialog() != DialogResult.OK)
+                {
+                    return false;
+                }
+            }
+
+            if (!pd.PrinterSettings.IsValid)
+            {
+                return false;
+            }
+
             pd.DocumentName = documentName;
             pd.PrintPage += (sender, ev) =>
             {
-                using var font = new Font("Courier New", 9F, FontStyle.Regular);
+                float fontSize = 9F;
+                var graphics = ev.Graphics;
+                if (scaleToPrintableArea && graphics is not null)
+                {
+                    using var measurementFont = new Font("Courier New", fontSize, FontStyle.Regular);
+                    var lines = printText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+                    var contentWidth = lines.Max(line => graphics.MeasureString(line, measurementFont).Width);
+                    var lineHeight = graphics.MeasureString("Ag", measurementFont).Height;
+                    var contentHeight = lines.Length * lineHeight;
+                    var bounds = ev.MarginBounds;
+                    fontSize *= Math.Min(bounds.Width / contentWidth, bounds.Height / contentHeight);
+                }
+
+                using var font = new Font("Courier New", fontSize, FontStyle.Regular);
                 using var brush = new SolidBrush(Color.Black);
-                ev.Graphics?.DrawString(printText, font, brush, 10, 10);
+                ev.Graphics?.DrawString(printText, font, brush, ev.MarginBounds, StringFormat.GenericTypographic);
             };
 
+            var printCompleted = false;
+            pd.EndPrint += (sender, e) => printCompleted = !e.Cancel;
             pd.Print();
-            return true;
+            return printCompleted;
         }
         catch (Exception ex)
         {

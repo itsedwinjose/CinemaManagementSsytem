@@ -28,22 +28,22 @@ ORDER BY c.name, st.display_order, ts.show_time;
 
         var items = new List<TheatreSetting>();
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-        while (await reader.ReadAsync(cancellationToken))
-        {
-            items.Add(new TheatreSetting
-            {
-                Id = reader.GetInt64(0),
-                CinemaId = reader.GetInt64(1),
-                CinemaName = reader.GetString(2),
-                ShowTypeId = reader.GetInt64(3),
-                ShowTypeName = reader.GetString(4),
-                ShowTime = reader.GetFieldValue<TimeSpan>(5),
-                Price = reader.GetDecimal(6)
-            });
-        }
+                        while (await reader.ReadAsync(cancellationToken))
+                    {
+                        items.Add(new TheatreSetting
+                        {
+                            Id = reader.GetInt64(0),
+                            CinemaId = reader.GetInt64(1),
+                            CinemaName = reader.GetString(2),
+                            ShowTypeId = reader.GetInt64(3),
+                            ShowTypeName = reader.GetString(4),
+                            ShowTime = reader.GetFieldValue<TimeSpan>(5),
+                            Price = reader.GetDecimal(6)
+                        });
+                    }
 
-        return items;
-    }
+                    return items;
+                }
 
     public async Task<long> CreateAsync(TheatreSetting setting, CancellationToken cancellationToken = default)
     {

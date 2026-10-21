@@ -11,8 +11,8 @@ partial class SetMovieForm
     private System.Windows.Forms.Panel topInputsPanel;
     private System.Windows.Forms.Label dateLabel;
     private System.Windows.Forms.DateTimePicker datePicker;
-    private System.Windows.Forms.Label theatreLabel;
-    private System.Windows.Forms.ComboBox theatreComboBox;
+    private System.Windows.Forms.Label audiLabel;
+    private System.Windows.Forms.ComboBox audiComboBox;
     private System.Windows.Forms.Label showTypeLabel;
     private System.Windows.Forms.ComboBox showTypeComboBox;
     private System.Windows.Forms.Label movieLabel;
@@ -57,8 +57,8 @@ partial class SetMovieForm
         topInputsPanel = new Panel();
         dateLabel = new Label();
         datePicker = new DateTimePicker();
-        theatreLabel = new Label();
-        theatreComboBox = new ComboBox();
+        audiLabel = new Label();
+        audiComboBox = new ComboBox();
         showTypeLabel = new Label();
         showTypeComboBox = new ComboBox();
         movieLabel = new Label();
@@ -119,8 +119,8 @@ partial class SetMovieForm
         topInputsPanel.BackColor = Color.FromArgb(220, 238, 245);
         topInputsPanel.Controls.Add(dateLabel);
         topInputsPanel.Controls.Add(datePicker);
-        topInputsPanel.Controls.Add(theatreLabel);
-        topInputsPanel.Controls.Add(theatreComboBox);
+        topInputsPanel.Controls.Add(audiLabel);
+        topInputsPanel.Controls.Add(audiComboBox);
         topInputsPanel.Controls.Add(showTypeLabel);
         topInputsPanel.Controls.Add(showTypeComboBox);
         topInputsPanel.Controls.Add(movieLabel);
@@ -153,25 +153,25 @@ partial class SetMovieForm
         datePicker.TabIndex = 1;
         datePicker.ValueChanged += Filter_Changed;
         // 
-        // theatreLabel
+        // audiLabel
         // 
-        theatreLabel.AutoSize = true;
-        theatreLabel.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
-        theatreLabel.Location = new Point(305, 6);
-        theatreLabel.Name = "theatreLabel";
-        theatreLabel.Size = new Size(164, 31);
-        theatreLabel.TabIndex = 2;
-        theatreLabel.Text = "Theatre Name";
+        audiLabel.AutoSize = true;
+        audiLabel.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
+        audiLabel.Location = new Point(305, 6);
+        audiLabel.Name = "audiLabel";
+        audiLabel.Size = new Size(80, 31);
+        audiLabel.TabIndex = 2;
+        audiLabel.Text = "Audi";
         // 
-        // theatreComboBox
+        // audiComboBox
         // 
-        theatreComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-        theatreComboBox.FormattingEnabled = true;
-        theatreComboBox.Location = new Point(305, 47);
-        theatreComboBox.Name = "theatreComboBox";
-        theatreComboBox.Size = new Size(304, 40);
-        theatreComboBox.TabIndex = 3;
-        theatreComboBox.SelectedIndexChanged += Filter_Changed;
+        audiComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        audiComboBox.FormattingEnabled = true;
+        audiComboBox.Location = new Point(305, 47);
+        audiComboBox.Name = "audiComboBox";
+        audiComboBox.Size = new Size(304, 40);
+        audiComboBox.TabIndex = 3;
+        audiComboBox.SelectedIndexChanged += Filter_Changed;
         // 
         // showTypeLabel
         // 
@@ -224,6 +224,7 @@ partial class SetMovieForm
         saveButton.TabIndex = 8;
         saveButton.Text = "Save";
         saveButton.UseVisualStyleBackColor = false;
+        saveButton.Click += saveButton_Click;
         // 
         // showAllButton
         // 

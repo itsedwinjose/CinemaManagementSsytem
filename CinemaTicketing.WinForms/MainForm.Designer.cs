@@ -82,6 +82,7 @@ partial class MainForm
         audiTabControl = new TabControl();
         legendFlowPanel = new FlowLayoutPanel();
         rightPanel = new Panel();
+        layoutBtn = new Button();
         reprintRadio = new RadioButton();
         dateLabel = new Label();
         datePicker = new DateTimePicker();
@@ -121,7 +122,6 @@ partial class MainForm
         counterAmountValueLabel = new Label();
         statusStrip = new StatusStrip();
         statusLabel = new ToolStripStatusLabel();
-        layoutBtn = new Button();
         centerPanel.SuspendLayout();
         audiHeaderPanel.SuspendLayout();
         bottomBarPanel.SuspendLayout();
@@ -238,6 +238,20 @@ partial class MainForm
         rightPanel.Padding = new Padding(8);
         rightPanel.Size = new Size(457, 1188);
         rightPanel.TabIndex = 1;
+        // 
+        // layoutBtn
+        // 
+        layoutBtn.BackColor = Color.FromArgb(0, 130, 200);
+        layoutBtn.FlatStyle = FlatStyle.Flat;
+        layoutBtn.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
+        layoutBtn.ForeColor = Color.White;
+        layoutBtn.Location = new Point(275, 927);
+        layoutBtn.Name = "layoutBtn";
+        layoutBtn.Size = new Size(144, 43);
+        layoutBtn.TabIndex = 24;
+        layoutBtn.Text = "Layout";
+        layoutBtn.UseVisualStyleBackColor = false;
+        layoutBtn.Click += layoutBtn_Click;
         // 
         // reprintRadio
         // 
@@ -708,20 +722,6 @@ partial class MainForm
         statusLabel.Name = "statusLabel";
         statusLabel.Size = new Size(83, 32);
         statusLabel.Text = "Ready.";
-        // 
-        // layoutBtn
-        // 
-        layoutBtn.BackColor = Color.FromArgb(0, 130, 200);
-        layoutBtn.FlatStyle = FlatStyle.Flat;
-        layoutBtn.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
-        layoutBtn.ForeColor = Color.White;
-        layoutBtn.Location = new Point(275, 927);
-        layoutBtn.Name = "layoutBtn";
-        layoutBtn.Size = new Size(144, 43);
-        layoutBtn.TabIndex = 24;
-        layoutBtn.Text = "Layout";
-        layoutBtn.UseVisualStyleBackColor = false;
-        layoutBtn.Click += layoutBtn_Click;
         // 
         // MainForm
         // 

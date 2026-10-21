@@ -179,7 +179,7 @@ SELECT LAST_INSERT_ID();
                 AddParameter(bkCmd, "@screeningId", booking.ScreeningId);
                 AddParameter(bkCmd, "@userId", booking.UserId);
                 AddParameter(bkCmd, "@bookingNumber", booking.BookingNumber);
-                AddParameter(bkCmd, "@bookingType", booking.BookingType.ToString());
+                AddParameter(bkCmd, "@bookingType", ToDatabaseBookingType(booking.BookingType));
                 AddParameter(bkCmd, "@paymentMode", booking.PaymentMode.ToString());
                 AddParameter(bkCmd, "@customerName", booking.CustomerName);
                 AddParameter(bkCmd, "@customerPhone", booking.CustomerPhone);
@@ -292,7 +292,7 @@ VALUES (@bookingId, @paymentMode, @amount, @createdUtc);
         ScreeningId = reader.GetInt64(1),
         UserId = reader.GetInt64(2),
         BookingNumber = reader.GetString(3),
-        BookingType = Enum.Parse<BookingType>(reader.GetString(4), true),
+        BookingType = ParseBookingType(reader.GetString(4)),
         PaymentMode = Enum.Parse<PaymentMode>(reader.GetString(5), true),
         CustomerName = reader.GetString(6),
         CustomerPhone = reader.GetString(7),
@@ -303,6 +303,26 @@ VALUES (@bookingId, @paymentMode, @amount, @createdUtc);
         TaxAmount = reader.GetDecimal(12),
         TotalAmount = reader.GetDecimal(13),
         CreatedUtc = reader.GetDateTime(14)
+    };
+
+    private static string ToDatabaseBookingType(BookingType bookingType) => bookingType switch
+    {
+        BookingType.CounterTicket => "COUNTER_TICKET",
+        BookingType.OnlineBooking => "ONLINE_BOOKING",
+        BookingType.FreeTicket => "FREE_TICKET",
+        BookingType.CounterReservation => "COUNTER_RESERVED",
+        BookingType.TelephoneReservation => "TELEPHONE_RESERVED",
+        _ => throw new ArgumentOutOfRangeException(nameof(bookingType), bookingType, null)
+    };
+
+    private static BookingType ParseBookingType(string bookingType) => bookingType.ToUpperInvariant() switch
+    {
+        "COUNTER_TICKET" => BookingType.CounterTicket,
+        "ONLINE_BOOKING" => BookingType.OnlineBooking,
+        "FREE_TICKET" => BookingType.FreeTicket,
+        "COUNTER_RESERVED" => BookingType.CounterReservation,
+        "TELEPHONE_RESERVED" => BookingType.TelephoneReservation,
+        _ => Enum.Parse<BookingType>(bookingType, true)
     };
 
     private static void AddParameter(DbCommand command, string name, object value)

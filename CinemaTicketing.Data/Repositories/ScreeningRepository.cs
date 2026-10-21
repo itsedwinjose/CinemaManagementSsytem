@@ -335,7 +335,8 @@ ORDER BY alc.row_index, alc.col_index;
         while (await reader.ReadAsync(cancellationToken))
         {
             var statusStr = reader.GetString(11);
-            Enum.TryParse<SeatStatus>(statusStr, true, out var status);
+            var normalizedStatus = statusStr.Replace("_", string.Empty, StringComparison.Ordinal);
+            Enum.TryParse<SeatStatus>(normalizedStatus, true, out var status);
 
             list.Add(new ScreeningSeat
             {

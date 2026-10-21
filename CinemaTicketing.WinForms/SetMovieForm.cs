@@ -52,7 +52,8 @@ internal partial class SetMovieForm : Form
     {
         mainGrid.Columns.Clear();
 
-        mainGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Theatre", HeaderText = "Theatre", Width = 90, ReadOnly = true });
+        // Audi column for auditoriums
+        mainGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "AudiName", HeaderText = "Audi", Width = 90, ReadOnly = true });
         mainGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "ShowType", HeaderText = "Show Type", Width = 100, ReadOnly = true });
         mainGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "ShowTime", HeaderText = "Show Time", Width = 85, ReadOnly = true });
         mainGrid.Columns.Add(new DataGridViewCheckBoxColumn { Name = "Is3D", HeaderText = "3 D", Width = 45, ReadOnly = true });
@@ -78,11 +79,7 @@ internal partial class SetMovieForm : Form
         _showTypes = await _theatreSettingsService.GetShowTypesAsync();
         _movies = await _movieService.GetMoviesAsync();
 
-        var cinemaList = new List<CinemaInfo> { new CinemaInfo { Id = 0, Name = "-- All --" } };
-        cinemaList.AddRange(_cinemas);
-        theatreComboBox.DataSource = cinemaList;
-        theatreComboBox.DisplayMember = nameof(CinemaInfo.Name);
-        theatreComboBox.ValueMember = nameof(CinemaInfo.Id);
+        // theatre selector removed for single-theatre deployment; keep _cinemaId for filtering if needed.
 
         var showTypeList = new List<ShowType> { new ShowType { Id = 0, Name = "-- All --" } };
         showTypeList.AddRange(_showTypes);
@@ -102,13 +99,30 @@ internal partial class SetMovieForm : Form
 
         _screenings = await _screeningRepository.GetScreeningsAsync(_cinemaId, date);
 
-        var selectedTheatreId = theatreComboBox.SelectedValue is long tId ? tId : 0;
+        // Populate audi combo with distinct auditorium names from screenings
+        var audiList = new List<string> { "-- All --" };
+        audiList.AddRange(_screenings.Select(s => s.AudiName).Where(n => !string.IsNullOrEmpty(n)).Distinct().OrderBy(n => n));
+        var prevAudi = audiComboBox.SelectedItem as string;
+        // Temporarily detach event to avoid re-entrancy while updating DataSource
+        audiComboBox.SelectedIndexChanged -= Filter_Changed;
+        audiComboBox.DataSource = audiList;
+        if (prevAudi != null && audiList.Contains(prevAudi))
+        {
+            audiComboBox.SelectedItem = prevAudi;
+        }
+        else if (audiComboBox.Items.Count > 0)
+        {
+            audiComboBox.SelectedIndex = 0;
+        }
+        audiComboBox.SelectedIndexChanged += Filter_Changed;
+
+        var selectedAudi = audiComboBox.SelectedItem is string a && a != "-- All --" ? a : null;
         var selectedShowTypeId = showTypeComboBox.SelectedValue is long stId ? stId : 0;
 
         var filtered = _screenings.AsEnumerable();
-        if (selectedTheatreId > 0)
+        if (!string.IsNullOrEmpty(selectedAudi))
         {
-            filtered = filtered.Where(s => s.CinemaId == selectedTheatreId);
+            filtered = filtered.Where(s => s.AudiName == selectedAudi);
         }
         if (selectedShowTypeId > 0)
         {
@@ -155,12 +169,21 @@ internal partial class SetMovieForm : Form
 
     private async void showAllButton_Click(object sender, EventArgs e)
     {
-        if (theatreComboBox.Items.Count > 0) theatreComboBox.SelectedIndex = 0;
         if (showTypeComboBox.Items.Count > 0) showTypeComboBox.SelectedIndex = 0;
         await LoadScreeningsGridAsync();
     }
 
+    private async void saveButton_Click(object sender, EventArgs e)
+    {
+        await AssignMovieAsync(selectedRowsOnly: false);
+    }
+
     private async void setSameMovieButton_Click(object sender, EventArgs e)
+    {
+        await AssignMovieAsync(selectedRowsOnly: true);
+    }
+
+    private async Task AssignMovieAsync(bool selectedRowsOnly)
     {
         if (movieComboBox.SelectedItem is not Movie selectedMovie)
         {
@@ -175,7 +198,7 @@ internal partial class SetMovieForm : Form
         foreach (DataGridViewRow row in mainGrid.Rows)
         {
             bool isChecked = Convert.ToBoolean(row.Cells["Sele"].Value);
-            if (isChecked && row.Tag is Screening screening)
+            if ((!selectedRowsOnly || isChecked) && row.Tag is Screening screening)
             {
                 await _screeningRepository.SetMovieAssignmentAsync(
                     screening.CinemaId,
@@ -190,7 +213,9 @@ internal partial class SetMovieForm : Form
 
         if (updateCount == 0)
         {
-            statusLabel.Text = "No rows selected. Please check the 'Sele' box on rows to assign movie.";
+            statusLabel.Text = selectedRowsOnly
+                ? "No rows selected. Please check the 'Sele' box on rows to assign movie."
+                : "No screenings are available in the grid to assign a movie.";
             statusLabel.ForeColor = Color.DarkOrange;
             return;
         }

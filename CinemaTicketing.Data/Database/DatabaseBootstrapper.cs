@@ -10,7 +10,8 @@ public sealed class DatabaseBootstrapper(IMySqlConnectionFactory connectionFacto
         "001_create_schema.sql",
         "002_seed_reference_data.sql",
         "003_expand_schema.sql",
-        "004_seed_test_layout_data.sql"
+        "004_seed_test_layout_data.sql",
+        "005_add_cashout_audi_name.sql"
     };
 
     public async Task InitializeAsync(CancellationToken cancellationToken = default)

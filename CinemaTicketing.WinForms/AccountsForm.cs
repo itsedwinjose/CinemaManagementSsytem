@@ -9,27 +9,26 @@ namespace CinemaTicketing.WinForms;
 internal partial class AccountsForm : Form
 {
     private readonly ICashoutService _cashoutService;
-    private readonly ITheatreSettingsService _theatreSettingsService;
+    private readonly IAudiRepository _audiRepository;
     private readonly ICinemaRepository _cinemaRepository;
     private readonly IThermalPrintService _printService;
     private readonly User _currentUser;
     private readonly long _cinemaId;
 
-    private IReadOnlyList<CinemaInfo> _cinemas = Array.Empty<CinemaInfo>();
     private IReadOnlyList<Screening> _eligibleScreenings = Array.Empty<Screening>();
     private IReadOnlyList<CashoutRecord> _unprintedReports = Array.Empty<CashoutRecord>();
     private CinemaInfo? _currentCinema;
 
     public AccountsForm(
         ICashoutService cashoutService,
-        ITheatreSettingsService theatreSettingsService,
+        IAudiRepository audiRepository,
         ICinemaRepository cinemaRepository,
         IThermalPrintService printService,
         User currentUser,
         long cinemaId = 1)
     {
         _cashoutService = cashoutService;
-        _theatreSettingsService = theatreSettingsService;
+        _audiRepository = audiRepository;
         _cinemaRepository = cinemaRepository;
         _printService = printService;
         _currentUser = currentUser;
@@ -48,12 +47,16 @@ internal partial class AccountsForm : Form
 
     private async void AccountsForm_Shown(object sender, EventArgs e)
     {
-        _cinemas = await _theatreSettingsService.GetCinemasAsync();
+        var audis = await _audiRepository.GetAllAsync(_cinemaId);
         _currentCinema = await _cinemaRepository.GetByIdAsync(_cinemaId);
 
-        theatreComboBox.DataSource = _cinemas.ToList();
-        theatreComboBox.DisplayMember = nameof(CinemaInfo.Name);
-        theatreComboBox.ValueMember = nameof(CinemaInfo.Id);
+        audiComboBox.SelectedIndexChanged -= Filter_Changed;
+        audiComboBox.DataSource = new[] { new AudiFilterOption(null, "All Audis") }
+            .Concat(audis.Select(audi => new AudiFilterOption(audi.Id, audi.Name)))
+            .ToList();
+        audiComboBox.DisplayMember = nameof(AudiFilterOption.Name);
+        audiComboBox.ValueMember = nameof(AudiFilterOption.Id);
+        audiComboBox.SelectedIndexChanged += Filter_Changed;
 
         await LoadCashoutGridAsync();
     }
@@ -61,6 +64,7 @@ internal partial class AccountsForm : Form
     private void SetupCashoutGridColumns()
     {
         cashoutGrid.Columns.Clear();
+        cashoutGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Audi", HeaderText = "Audi", Width = 90 });
         cashoutGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Show", HeaderText = "Show", Width = 110 });
         cashoutGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Movie", HeaderText = "Movie Name", Width = 150 });
         cashoutGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "SoldSeat", HeaderText = "Sold", Width = 60 });
@@ -75,6 +79,7 @@ internal partial class AccountsForm : Form
     private void SetupReportsGridColumns()
     {
         reportsGrid.Columns.Clear();
+        reportsGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Audi", HeaderText = "Audi", Width = 90 });
         reportsGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "ShowDate", HeaderText = "Date", Width = 90 });
         reportsGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "ShowTime", HeaderText = "Time", Width = 80 });
         reportsGrid.Columns.Add(new DataGridViewTextBoxColumn { Name = "ShowType", HeaderText = "Show Type", Width = 110 });
@@ -88,11 +93,15 @@ internal partial class AccountsForm : Form
     {
         var date = DateOnly.FromDateTime(datePicker.Value);
         _eligibleScreenings = await _cashoutService.GetEligibleScreeningsAsync(_cinemaId, date);
+        var selectedAudiId = audiComboBox.SelectedValue as long?;
+        var screenings = selectedAudiId.HasValue
+            ? _eligibleScreenings.Where(screening => screening.AudiId == selectedAudiId.Value).ToList()
+            : _eligibleScreenings;
 
         cashoutGrid.Rows.Clear();
         decimal totalCounterBalance = 0m;
 
-        foreach (var s in _eligibleScreenings)
+        foreach (var s in screenings)
         {
             var record = await _cashoutService.CalculateCashoutAsync(s.Id);
             if (record is null) continue;
@@ -100,6 +109,7 @@ internal partial class AccountsForm : Form
             totalCounterBalance += record.TotalAmount;
 
             int rowIndex = cashoutGrid.Rows.Add(
+                s.AudiName,
                 $"{s.ShowTypeName} ({DateTime.Today.Add(s.ShowTime):hh:mm tt})",
                 record.MovieName,
                 record.SoldSeats,
@@ -114,7 +124,7 @@ internal partial class AccountsForm : Form
         }
 
         counterBalanceLabel.Text = $"Counter Balance: ₹{totalCounterBalance:F2}";
-        statusLabel.Text = $"Found {_eligibleScreenings.Count} eligible shows for cashout on {date:dd-MMM-yyyy}.";
+        statusLabel.Text = $"Found {screenings.Count} eligible shows for cashout on {date:dd-MMM-yyyy}.";
     }
 
     private async Task LoadUnprintedReportsGridAsync()
@@ -125,6 +135,7 @@ internal partial class AccountsForm : Form
         foreach (var r in _unprintedReports)
         {
             int rowIndex = reportsGrid.Rows.Add(
+                r.AudiName,
                 r.ShowDate.ToString("dd-MMM-yyyy"),
                 DateTime.Today.Add(r.ShowTime).ToString("hh:mm tt"),
                 r.ShowTypeName,
@@ -139,7 +150,7 @@ internal partial class AccountsForm : Form
         statusLabel.Text = $"Found {_unprintedReports.Count} unprinted cashout reports.";
     }
 
-    private async void Filter_Changed(object sender, EventArgs e)
+    private async void Filter_Changed(object? sender, EventArgs e)
     {
         await LoadCashoutGridAsync();
     }
@@ -153,7 +164,7 @@ internal partial class AccountsForm : Form
     {
         if (cashoutGrid.SelectedRows.Count > 0 && cashoutGrid.SelectedRows[0].Tag is (Screening s, CashoutRecord r))
         {
-            selectedShowLabel.Text = $"Selected Show: {s.ShowTypeName} at {DateTime.Today.Add(s.ShowTime):hh:mm tt} - Total: ₹{r.TotalAmount:F2}";
+            selectedShowLabel.Text = $"Selected Show: {s.AudiName} - {s.ShowTypeName} at {DateTime.Today.Add(s.ShowTime):hh:mm tt} - Total: ₹{r.TotalAmount:F2}";
         }
         else
         {
@@ -173,14 +184,47 @@ internal partial class AccountsForm : Form
         try
         {
             cashoutPrintButton.Enabled = false;
-            await _cashoutService.ProcessCashoutAsync(record, _currentUser.DisplayName);
-
-            if (_currentCinema is not null)
+            if (_currentCinema is null)
             {
-                await _printService.PrintCashoutReportAsync(record, _currentCinema, "");
+                statusLabel.Text = "Cinema information is unavailable; cashout was not processed.";
+                statusLabel.ForeColor = Color.DarkRed;
+                return;
             }
 
-            statusLabel.Text = $"Successfully processed cashout for {screening.ShowTypeName} ({DateTime.Today.Add(screening.ShowTime):hh:mm tt}).";
+            var reportRecord = new CashoutRecord
+            {
+                CinemaId = record.CinemaId,
+                AudiId = record.AudiId,
+                AudiName = record.AudiName,
+                ShowDate = record.ShowDate,
+                ShowTime = record.ShowTime,
+                ShowTypeName = record.ShowTypeName,
+                MovieName = record.MovieName,
+                SoldSeats = record.SoldSeats,
+                FreeSeats = record.FreeSeats,
+                ReservedSeats = record.ReservedSeats,
+                TicketAmount = record.TicketAmount,
+                ReservationAmount = record.ReservationAmount,
+                ThreeDAmount = record.ThreeDAmount,
+                TotalAmount = record.TotalAmount,
+                CashAmount = record.CashAmount,
+                CardAmount = record.CardAmount,
+                OnlineAmount = record.OnlineAmount,
+                UpiAmount = record.UpiAmount,
+                CashedOutAt = DateTime.UtcNow,
+                CashedOutBy = _currentUser.DisplayName
+            };
+            using var previewForm = new CashoutReportPreviewForm(reportRecord, _currentCinema, _printService);
+            if (previewForm.ShowDialog(this) != DialogResult.OK)
+            {
+                statusLabel.Text = "Printing cancelled; cashout remains available.";
+                statusLabel.ForeColor = Color.DarkOrange;
+                return;
+            }
+
+            await _cashoutService.ProcessCashoutAsync(reportRecord, _currentUser.DisplayName);
+
+            statusLabel.Text = $"Cashout printed and processed for {screening.AudiName} - {screening.ShowTypeName}.";
             statusLabel.ForeColor = Color.DarkGreen;
 
             await LoadCashoutGridAsync();
@@ -225,9 +269,19 @@ internal partial class AccountsForm : Form
         try
         {
             printReportButton.Enabled = false;
-            if (_currentCinema is not null)
+            if (_currentCinema is null)
             {
-                await _printService.PrintCashoutReportAsync(record, _currentCinema, "");
+                statusLabel.Text = "Cinema information is unavailable; report was not exported.";
+                statusLabel.ForeColor = Color.DarkRed;
+                return;
+            }
+
+            using var previewForm = new CashoutReportPreviewForm(record, _currentCinema, _printService);
+            if (previewForm.ShowDialog(this) != DialogResult.OK)
+            {
+                statusLabel.Text = "Printing cancelled; report remains available.";
+                statusLabel.ForeColor = Color.DarkOrange;
+                return;
             }
 
             await _cashoutService.MarkReportPrintedAsync(record.Id, _currentUser.DisplayName);
@@ -241,4 +295,6 @@ internal partial class AccountsForm : Form
             printReportButton.Enabled = true;
         }
     }
+
+    private sealed record AudiFilterOption(long? Id, string Name);
 }

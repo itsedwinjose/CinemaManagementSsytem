@@ -49,7 +49,7 @@ public sealed class BookingService(
                 ScreeningSeatId = s.Id,
                 SeatClassName = string.IsNullOrWhiteSpace(s.SeatClassName) ? "Normal" : s.SeatClassName,
                 SeatNumber = s.SeatNumber,
-                Price = s.Price
+                Price = request.BookingType == BookingType.FreeTicket ? 0m : s.Price
             });
         }
 

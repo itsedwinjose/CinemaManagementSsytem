@@ -10,8 +10,8 @@ partial class AccountsForm
     private System.Windows.Forms.Panel topCashoutPanel;
     private System.Windows.Forms.Label dateLabel;
     private System.Windows.Forms.DateTimePicker datePicker;
-    private System.Windows.Forms.Label theatreLabel;
-    private System.Windows.Forms.ComboBox theatreComboBox;
+    private System.Windows.Forms.Label audiLabel;
+    private System.Windows.Forms.ComboBox audiComboBox;
     private System.Windows.Forms.Button refreshButton;
     private System.Windows.Forms.DataGridView cashoutGrid;
     private System.Windows.Forms.Panel bottomPanel;
@@ -46,8 +46,8 @@ partial class AccountsForm
         counterBalanceLabel = new Label();
         topCashoutPanel = new Panel();
         refreshButton = new Button();
-        theatreComboBox = new ComboBox();
-        theatreLabel = new Label();
+        audiComboBox = new ComboBox();
+        audiLabel = new Label();
         datePicker = new DateTimePicker();
         dateLabel = new Label();
         reportsTabPage = new TabPage();
@@ -171,8 +171,8 @@ partial class AccountsForm
         // topCashoutPanel
         // 
         topCashoutPanel.Controls.Add(refreshButton);
-        topCashoutPanel.Controls.Add(theatreComboBox);
-        topCashoutPanel.Controls.Add(theatreLabel);
+        topCashoutPanel.Controls.Add(audiComboBox);
+        topCashoutPanel.Controls.Add(audiLabel);
         topCashoutPanel.Controls.Add(datePicker);
         topCashoutPanel.Controls.Add(dateLabel);
         topCashoutPanel.Dock = DockStyle.Top;
@@ -191,24 +191,24 @@ partial class AccountsForm
         refreshButton.UseVisualStyleBackColor = true;
         refreshButton.Click += refreshButton_Click;
         // 
-        // theatreComboBox
+        // audiComboBox
         // 
-        theatreComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-        theatreComboBox.FormattingEnabled = true;
-        theatreComboBox.Location = new Point(783, 15);
-        theatreComboBox.Name = "theatreComboBox";
-        theatreComboBox.Size = new Size(351, 40);
-        theatreComboBox.TabIndex = 3;
-        theatreComboBox.SelectedIndexChanged += Filter_Changed;
+        audiComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        audiComboBox.FormattingEnabled = true;
+        audiComboBox.Location = new Point(783, 15);
+        audiComboBox.Name = "audiComboBox";
+        audiComboBox.Size = new Size(351, 40);
+        audiComboBox.TabIndex = 3;
+        audiComboBox.SelectedIndexChanged += Filter_Changed;
         // 
-        // theatreLabel
+        // audiLabel
         // 
-        theatreLabel.AutoSize = true;
-        theatreLabel.Location = new Point(605, 19);
-        theatreLabel.Name = "theatreLabel";
-        theatreLabel.Size = new Size(100, 32);
-        theatreLabel.TabIndex = 2;
-        theatreLabel.Text = "Theatre:";
+        audiLabel.AutoSize = true;
+        audiLabel.Location = new Point(605, 19);
+        audiLabel.Name = "audiLabel";
+        audiLabel.Size = new Size(100, 32);
+        audiLabel.TabIndex = 2;
+        audiLabel.Text = "Audi:";
         // 
         // datePicker
         // 
