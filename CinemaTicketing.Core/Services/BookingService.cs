@@ -32,10 +32,12 @@ public sealed class BookingService(
         }
 
         // Fetch charge settings
-        var resChargeSetting = await settingRepository.GetByKeyAsync("reservation_charge_per_seat", cancellationToken);
+        var resChargeSetting = await settingRepository.GetByKeyAsync("reservation_charge_per_seat", cancellationToken)
+            ?? await settingRepository.GetByKeyAsync("reservation_charge", cancellationToken);
         var resChargePerSeat = decimal.TryParse(resChargeSetting?.SettingValue, out var rc) ? rc : 10m;
 
-        var threeDChargeSetting = await settingRepository.GetByKeyAsync("three_d_charge_per_seat", cancellationToken);
+        var threeDChargeSetting = await settingRepository.GetByKeyAsync("three_d_charge_per_seat", cancellationToken)
+            ?? await settingRepository.GetByKeyAsync("three_d_charge", cancellationToken);
         var threeDChargePerSeat = decimal.TryParse(threeDChargeSetting?.SettingValue, out var td) ? td : 30m;
 
         decimal ticketAmount = 0m;
@@ -107,4 +109,16 @@ public sealed class BookingService(
 
     public Task<Booking?> GetLatestBookingAsync(CancellationToken cancellationToken = default)
         => bookingRepository.GetLatestBookingAsync(cancellationToken);
+
+    public Task<IReadOnlyList<Booking>> GetForScreeningSeatsAsync(
+        long screeningId,
+        IEnumerable<long> screeningSeatIds,
+        CancellationToken cancellationToken = default)
+        => bookingRepository.GetForScreeningSeatsAsync(screeningId, screeningSeatIds, cancellationToken);
+
+    public Task MarkTicketPrintedAsync(
+        IEnumerable<long> bookingIds,
+        IEnumerable<long> confirmedReservationBookingIds,
+        CancellationToken cancellationToken = default)
+        => bookingRepository.MarkTicketPrintedAsync(bookingIds, confirmedReservationBookingIds, cancellationToken);
 }

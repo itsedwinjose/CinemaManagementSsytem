@@ -313,6 +313,7 @@ SELECT COALESCE(ss.id, (alc.row_index * 1000 + alc.col_index + 1)) AS id,
        COALESCE(sc.name, '') AS seat_class_name,
        alc.is_damaged,
        COALESCE(ss.status, 'AVAILABLE') AS status,
+       COALESCE(ss.is_ticket_printed, 0) AS is_ticket_printed,
        COALESCE(scp.price, ts.price, 0) AS calculated_price
 FROM audi_layout_cells alc
 INNER JOIN screenings s ON s.id = @screeningId AND alc.audi_id = s.audi_id
@@ -352,7 +353,8 @@ ORDER BY alc.row_index, alc.col_index;
                 SeatClassName = reader.GetString(9),
                 IsDamaged = reader.GetBoolean(10),
                 Status = status,
-                Price = reader.GetDecimal(12)
+                IsTicketPrinted = reader.GetBoolean(12),
+                Price = reader.GetDecimal(13)
             });
         }
 

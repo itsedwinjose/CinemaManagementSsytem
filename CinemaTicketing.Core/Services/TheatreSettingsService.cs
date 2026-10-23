@@ -13,6 +13,7 @@ public interface ITheatreSettingsService
     Task<IReadOnlyList<TheatreSetting>> GetSettingsAsync(CancellationToken cancellationToken = default);
     Task<TheatreSettingSaveResult> SaveAsync(TheatreSettingSaveRequest request, CancellationToken cancellationToken = default);
     Task DeleteAsync(long id, CancellationToken cancellationToken = default);
+    Task<decimal> GetReservationChargeAsync(CancellationToken cancellationToken = default);
     Task<decimal> Get3DChargeAsync(CancellationToken cancellationToken = default);
     Task Save3DChargeAsync(decimal amount, CancellationToken cancellationToken = default);
     Task CreateShowTypeAsync(string name, CancellationToken cancellationToken = default);
@@ -83,22 +84,36 @@ public sealed class TheatreSettingsService(
 
     public async Task<decimal> Get3DChargeAsync(CancellationToken cancellationToken = default)
     {
-        var setting = await applicationSettingRepository.GetByKeyAsync("three_d_charge", cancellationToken);
-        if (setting is not null && decimal.TryParse(setting.SettingValue, out var val))
-        {
-            return val;
-        }
-        return 30m;
+        return await GetChargeAsync("three_d_charge_per_seat", "three_d_charge", 30m, cancellationToken);
+    }
+
+    public async Task<decimal> GetReservationChargeAsync(CancellationToken cancellationToken = default)
+    {
+        return await GetChargeAsync("reservation_charge_per_seat", "reservation_charge", 10m, cancellationToken);
     }
 
     public Task Save3DChargeAsync(decimal amount, CancellationToken cancellationToken = default)
     {
         return applicationSettingRepository.UpsertAsync(new ApplicationSetting
         {
-            SettingKey = "three_d_charge",
+            SettingKey = "three_d_charge_per_seat",
             SettingValue = amount.ToString("F0"),
             Description = "Default optional 3D charge per seat"
         }, cancellationToken);
+    }
+
+    private async Task<decimal> GetChargeAsync(
+        string settingKey,
+        string legacySettingKey,
+        decimal defaultAmount,
+        CancellationToken cancellationToken)
+    {
+        var setting = await applicationSettingRepository.GetByKeyAsync(settingKey, cancellationToken)
+            ?? await applicationSettingRepository.GetByKeyAsync(legacySettingKey, cancellationToken);
+
+        return setting is not null && decimal.TryParse(setting.SettingValue, out var amount)
+            ? amount
+            : defaultAmount;
     }
 
     public async Task CreateShowTypeAsync(string name, CancellationToken cancellationToken = default)

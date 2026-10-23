@@ -64,6 +64,9 @@ internal partial class MainForm : Form
         _currentUser = currentUser;
 
         InitializeComponent();
+        AppTheme.ApplyAudiTabLayout(audiTabControl);
+        AppTheme.ApplySeatSelectionButton(ticketButton);
+        AppTheme.ApplySeatSelectionButton(reservationButton);
         InitializeLegendSwatches();
     }
 
@@ -78,14 +81,23 @@ internal partial class MainForm : Form
         AddLegendItem("Online Booking", SeatStatusStyles.OnlineBooking);
         AddLegendItem("Ticket Reserved", SeatStatusStyles.CounterReserved);
         AddLegendItem("Seat Blocked", SeatStatusStyles.SeatBlocked);
+        AddLegendItem("Ticket Printed", SeatStatusStyles.TicketPrinted);
+
+        legendFlowPanel.WrapContents = false;
+        legendFlowPanel.Width = Math.Max(
+            535,
+            legendFlowPanel.Controls.Cast<Control>().Sum(control => control.Width + control.Margin.Horizontal)
+                + legendFlowPanel.Padding.Horizontal);
     }
 
     private void AddLegendItem(string text, Color color)
     {
+        using var labelFont = new Font("Segoe UI", 7.5F);
+        var labelWidth = TextRenderer.MeasureText(text, labelFont).Width + 2;
         var panel = new Panel
         {
-            Width = 82,
-            Height = 22,
+            Width = 16 + labelWidth,
+            Height = 28,
             Margin = new Padding(1)
         };
 
@@ -94,18 +106,18 @@ internal partial class MainForm : Form
             Width = 12,
             Height = 12,
             BackColor = color,
-            Location = new Point(2, 4),
+            Location = new Point(2, 8),
             BorderStyle = BorderStyle.FixedSingle
         };
 
         var label = new Label
         {
             Text = text,
-            Font = new Font("Segoe UI", 7.5F),
+            Font = new Font(labelFont.FontFamily, labelFont.Size, labelFont.Style),
             AutoSize = false,
-            Width = 65,
-            Height = 20,
-            Location = new Point(16, 2),
+            Width = labelWidth,
+            Height = 26,
+            Location = new Point(16, 1),
             TextAlign = ContentAlignment.MiddleLeft
         };
 
@@ -271,6 +283,9 @@ internal partial class MainForm : Form
 
     private void seatMap_SelectionChanged(object sender, EventArgs e)
     {
+        var hasSelectedSeats = seatMap.GetSelectedSeats().Count > 0;
+        ticketButton.Enabled = hasSelectedSeats;
+        reservationButton.Enabled = hasSelectedSeats;
         UpdateCalculatedAmount();
     }
 
@@ -297,22 +312,9 @@ internal partial class MainForm : Form
     {
         var selected = seatMap.GetSelectedSeats();
         decimal ticketTotal = selected.Sum(s => s.Price);
-        decimal resvTotal = resvChargeCheckBox.Checked ? selected.Count * 10m : 0m;
-        decimal threeDTotal = threeDChargeCheckBox.Checked ? selected.Count * 30m : 0m;
-        decimal totalAmount = ticketTotal + resvTotal + threeDTotal;
 
-        statusLabel.Text = $"Selected Seats: {selected.Count} | Total Amount: ₹{totalAmount:F2}";
+        statusLabel.Text = $"Selected Seats: {selected.Count} | Total Amount: ₹{ticketTotal:F2}";
         statusLabel.ForeColor = Color.FromArgb(30, 30, 30);
-    }
-
-    private void resvChargeCheckBox_CheckedChanged(object sender, EventArgs e)
-    {
-        UpdateCalculatedAmount();
-    }
-
-    private void threeDChargeCheckBox_CheckedChanged(object sender, EventArgs e)
-    {
-        UpdateCalculatedAmount();
     }
 
     private void UpdateStatistics()
@@ -365,28 +367,99 @@ internal partial class MainForm : Form
             return;
         }
 
+        if (_currentCinema is null)
+        {
+            statusLabel.Text = "Cinema details are unavailable; ticket preview cannot be shown.";
+            statusLabel.ForeColor = Color.DarkRed;
+            return;
+        }
+
+        var selectedScreening = _selectedScreening;
+        if (selectedSeats.All(seat => seat.Status == SeatStatus.Available))
+        {
+            await CreateAndPreviewTicketAsync(selectedScreening, _currentCinema, selectedSeats);
+            return;
+        }
+
+        if (selectedSeats.Any(seat => seat.Status == SeatStatus.Available))
+        {
+            statusLabel.Text = "Select either new seats or seats from existing bookings, not both.";
+            statusLabel.ForeColor = Color.DarkRed;
+            return;
+        }
+
+        var bookings = await _bookingService.GetForScreeningSeatsAsync(
+            selectedScreening.Id,
+            selectedSeats.Select(seat => seat.Id));
+        var bookedSeatIds = bookings
+            .SelectMany(booking => booking.Seats)
+            .Select(seat => seat.ScreeningSeatId)
+            .ToHashSet();
+        var seatsWithoutBookings = selectedSeats
+            .Where(seat => !bookedSeatIds.Contains(seat.Id))
+            .Select(seat => seat.SeatNumber)
+            .ToList();
+
+        if (seatsWithoutBookings.Count > 0)
+        {
+            statusLabel.Text = $"No saved ticket exists for: {string.Join(", ", seatsWithoutBookings)}.";
+            statusLabel.ForeColor = Color.DarkRed;
+            return;
+        }
+
+        foreach (var booking in bookings)
+        {
+            ShowTicketPreview(booking, _currentCinema, selectedScreening);
+        }
+
+        var bookingIds = bookings.Select(booking => booking.Id).ToList();
+        var confirmedReservationIds = bookings
+            .Where(booking => booking.BookingType is BookingType.CounterReservation or BookingType.TelephoneReservation)
+            .Select(booking => booking.Id)
+            .ToList();
+        await _bookingService.MarkTicketPrintedAsync(bookingIds, confirmedReservationIds);
+
+        statusLabel.Text = confirmedReservationIds.Count > 0
+            ? "Reservation confirmed and ticket previewed."
+            : "Ticket previewed.";
+        statusLabel.ForeColor = Color.DarkGreen;
+        await SelectScreeningAsync(selectedScreening);
+    }
+
+    private async Task CreateAndPreviewTicketAsync(
+        Screening screening,
+        CinemaInfo cinema,
+        IReadOnlyList<ScreeningSeat> selectedSeats)
+    {
         var request = new BookingRequest(
-            _selectedScreening.Id,
+            screening.Id,
             _currentUser.Id,
             BookingType.CounterTicket,
             GetSelectedPaymentMode(),
             CustomerName: "",
             CustomerPhone: "",
             CustomerAddress: "",
-            ApplyReservationCharge: resvChargeCheckBox.Checked,
-            Apply3DCharge: threeDChargeCheckBox.Checked,
-            SelectedSeats: selectedSeats
-        );
+            ApplyReservationCharge: false,
+            Apply3DCharge: false,
+            SelectedSeats: selectedSeats);
 
         var result = await _bookingService.ProcessBookingAsync(request);
         statusLabel.Text = result.Message;
         statusLabel.ForeColor = result.IsSuccess ? Color.DarkGreen : Color.DarkRed;
 
-        if (result.IsSuccess && result.Booking is not null && _currentCinema is not null)
+        if (result.IsSuccess && result.Booking is not null)
         {
-            await _printService.PrintTicketAsync(result.Booking, _currentCinema, _selectedScreening, "");
-            await SelectScreeningAsync(_selectedScreening);
+            ShowTicketPreview(result.Booking, cinema, screening);
+            await _bookingService.MarkTicketPrintedAsync(new[] { result.Booking.Id }, Array.Empty<long>());
+            await SelectScreeningAsync(screening);
         }
+    }
+
+    private void ShowTicketPreview(Booking booking, CinemaInfo cinema, Screening screening)
+    {
+        var ticketText = ThermalPrintService.BuildTicketText(booking, cinema, screening);
+        using var preview = new TicketPreviewDialog(ticketText);
+        preview.ShowDialog(this);
     }
 
     private async void reservationButton_Click(object sender, EventArgs e)
@@ -401,7 +474,13 @@ internal partial class MainForm : Form
             return;
         }
 
-        using var dialog = new ReservationDialog(selectedSeats, _selectedScreening);
+        var reservationChargePerSeat = await _theatreSettingsService.GetReservationChargeAsync();
+        var threeDChargePerSeat = await _theatreSettingsService.Get3DChargeAsync();
+        using var dialog = new ReservationDialog(
+            selectedSeats,
+            _selectedScreening,
+            reservationChargePerSeat,
+            threeDChargePerSeat);
         if (dialog.ShowDialog(this) == DialogResult.OK)
         {
             if (dialog.IsUnblockAction)
@@ -422,9 +501,8 @@ internal partial class MainForm : Form
                 statusLabel.Text = result.Message;
                 statusLabel.ForeColor = result.IsSuccess ? Color.DarkGreen : Color.DarkRed;
 
-                if (result.IsSuccess && result.Booking is not null && _currentCinema is not null)
+                if (result.IsSuccess)
                 {
-                    await _printService.PrintTicketAsync(result.Booking, _currentCinema, _selectedScreening, "");
                     await SelectScreeningAsync(_selectedScreening);
                 }
             }
@@ -438,6 +516,7 @@ internal partial class MainForm : Form
         {
             await SelectScreeningAsync(_selectedScreening);
         }
+        seatMap.ClearSelection();
         statusLabel.Text = "Refreshed seat map.";
         statusLabel.ForeColor = Color.FromArgb(33, 37, 41);
     }
@@ -527,8 +606,4 @@ internal partial class MainForm : Form
 
     }
 
-    private void ticketRadio_CheckedChanged(object sender, EventArgs e)
-    {
-
-    }
 }

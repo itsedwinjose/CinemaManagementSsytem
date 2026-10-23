@@ -15,6 +15,7 @@ public sealed class ScreeningSeat
     public long? SeatClassId { get; init; }
     public string SeatClassName { get; init; } = string.Empty;
     public bool IsDamaged { get; init; }
+    public bool IsTicketPrinted { get; init; }
     public SeatStatus Status { get; init; } = SeatStatus.Available;
     public decimal Price { get; init; }
 }

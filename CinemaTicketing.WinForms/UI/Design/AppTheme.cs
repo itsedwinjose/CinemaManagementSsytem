@@ -9,6 +9,28 @@ public static class AppTheme
         ApplyControlStyles(form.Controls);
     }
 
+    public static void ApplyAudiTabLayout(TabControl tabControl)
+    {
+        tabControl.Multiline = false;
+        tabControl.SizeMode = TabSizeMode.FillToRight;
+    }
+
+    public static void ApplySeatSelectionButton(Button button)
+    {
+        button.FlatStyle = FlatStyle.Flat;
+        button.FlatAppearance.BorderSize = 1;
+        button.UseVisualStyleBackColor = false;
+        button.EnabledChanged += (_, _) => UpdateSeatSelectionButton(button);
+        UpdateSeatSelectionButton(button);
+    }
+
+    private static void UpdateSeatSelectionButton(Button button)
+    {
+        button.BackColor = button.Enabled ? AppColors.SeatActionButton : AppColors.DisabledButtonBackground;
+        button.ForeColor = button.Enabled ? AppColors.ButtonText : AppColors.DisabledButtonText;
+        button.FlatAppearance.BorderColor = button.Enabled ? AppColors.SeatActionButton : AppColors.BorderColor;
+    }
+
     private static void ApplyControlStyles(Control.ControlCollection controls)
     {
         foreach (Control control in controls)

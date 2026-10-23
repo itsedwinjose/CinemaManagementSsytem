@@ -30,6 +30,8 @@ internal partial class ReservationDialog : Form
         AppTheme.ApplySuccessButton(teleReservedButton);
         AppTheme.ApplyDestructiveButton(unblockButton);
 
+        resChargeCheckBox.Text = $"Reservation Charge (₹{_resChargePerSeat:F2} per seat)";
+        threeDChargeCheckBox.Text = $"3D Charge (₹{_threeDChargePerSeat:F2} per seat)";
         UpdateSummary();
     }
 
@@ -48,15 +50,9 @@ internal partial class ReservationDialog : Form
         decimal threeDCharge = threeDChargeCheckBox.Checked ? (_seats.Count * _threeDChargePerSeat) : 0m;
         decimal total = ticketAmount + resCharge + threeDCharge;
 
-        summaryLabel.Text = $"Seats: {_seats.Count} | Ticket: ₹{ticketAmount:F2} | Res: ₹{resCharge:F2} | 3D: ₹{threeDCharge:F2} | Total: ₹{total:F2}";
-    }
-
-    private PaymentMode GetSelectedPaymentMode()
-    {
-        if (onlineRadio.Checked) return PaymentMode.Online;
-        if (cardRadio.Checked) return PaymentMode.Card;
-        if (upiRadio.Checked) return PaymentMode.UpiQr;
-        return PaymentMode.Cash;
+        summaryLabel.Text =
+            $"Seats: {_seats.Count} | Tickets: ₹{ticketAmount:F2}\r\n" +
+            $"Reservation: ₹{resCharge:F2} | 3D: ₹{threeDCharge:F2} | Total: ₹{total:F2}";
     }
 
     private void onlineBookingButton_Click(object sender, EventArgs e)
@@ -97,7 +93,7 @@ internal partial class ReservationDialog : Form
             _screening.Id,
             1, // Default system operator user
             bookingType,
-            GetSelectedPaymentMode(),
+            PaymentMode.Cash,
             nameTextBox.Text.Trim(),
             phoneTextBox.Text.Trim(),
             addressTextBox.Text.Trim(),

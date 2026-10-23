@@ -100,6 +100,8 @@ The number and names are data-driven.
 
 Selecting an Audi loads its physical layout and the selected screening's seat states.
 
+Keep every Audi label visible on one horizontal row; do not wrap the tabs into additional rows or hide them behind an overflow or dropdown control.
+
 ## 4.3 Seat Map
 
 Use a custom `CinemaSeatMapControl`.
@@ -215,8 +217,9 @@ When Ticket is clicked:
 11. Create payment record.
 12. Update screening-seat states.
 13. Commit.
-14. Print ticket.
-15. Clear selection.
+14. Show a ticket-data preview dialog.
+15. Persist the printed-ticket marker.
+16. Clear selection.
 
 If any database validation fails:
 - rollback
@@ -224,6 +227,13 @@ If any database validation fails:
 - refresh affected seats
 
 Never allow duplicate sale from two network clients.
+
+- Available seats create a direct ticket booking and become occupied.
+- Direct tickets from the main form do not expose optional reservation or 3D charge checkboxes.
+- Existing online or manually blocked seats show their saved ticket preview only if a booking exists.
+- Counter and telephone reservations are confirmed as ticket sales when previewed; retain their saved ticket and charge amounts.
+- Store the printed-ticket marker separately from the seat status so cashout keeps the original sale category.
+- Selecting a previously previewed ticket opens its saved data again without creating another booking.
 
 ---
 
@@ -273,11 +283,15 @@ These values come from `application_settings`.
 ### Reserved
 - counter reservation
 - reservation charge applies per seat when selected
+- selected 3D charge applies per seat when selected
 
 ### Tele Reserved
 - telephone reservation
 - reservation charge applies per seat
+- selected 3D charge applies per seat when selected
 - phone number should be stored
+
+The dialog summary displays the selected seat count, ticket subtotal, selected per-seat charges, and final total.
 
 ### Online
 - set selected seats to online booking/sold state according to the existing application behavior

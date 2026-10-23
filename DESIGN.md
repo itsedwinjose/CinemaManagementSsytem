@@ -285,6 +285,8 @@ They should be:
 - text-based
 - close to the reference appearance
 - clearly identify the active Audi
+- keep every Audi label visible on one horizontal row
+- keep all seat-map legend labels fully visible on one horizontal row
 
 Do not use browser-style tabs.
 
@@ -503,6 +505,8 @@ Bottom:
 - legend
 - totals/status information
 
+Keep the centered active-Audi title fully visible in a dedicated header area above the seat map.
+
 Do not redesign this into a sidebar dashboard.
 
 ---
@@ -537,6 +541,9 @@ Use:
 - strong colored action buttons
 
 The amount calculation should be visually prominent.
+Show the ticket subtotal, selected additional charges, and final total without clipping.
+
+The main seat-map legend includes a distinct ticket-printed state, and ticket actions open a read-only ticket-data preview dialog.
 
 ---
 

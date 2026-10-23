@@ -12,6 +12,9 @@ public static class AppColors
     public static readonly Color SuccessButton = Color.FromArgb(40, 167, 69);
     public static readonly Color DestructiveButton = Color.FromArgb(220, 53, 69);
     public static readonly Color ActionTealButton = Color.FromArgb(23, 162, 184);
+    public static readonly Color SeatActionButton = Color.FromArgb(0, 168, 223);
+    public static readonly Color DisabledButtonBackground = Color.FromArgb(220, 220, 220);
+    public static readonly Color DisabledButtonText = Color.FromArgb(110, 110, 110);
     public static readonly Color NeutralButton = Color.FromArgb(108, 117, 125);
     public static readonly Color ButtonText = Color.White;
 

@@ -140,6 +140,42 @@ public class BookingServiceTests
         Assert.Equal(PaymentMode.UpiQr, result.Booking.PaymentMode);
     }
 
+    [Theory]
+    [InlineData(BookingType.CounterReservation)]
+    [InlineData(BookingType.TelephoneReservation)]
+    public async Task ProcessBookingAsync_ReservationsAddSelectedChargesPerSeat(BookingType bookingType)
+    {
+        var bookingRepo = new StubBookingRepository();
+        var settingRepo = new StubSettingRepository();
+        var service = new BookingService(bookingRepo, settingRepo);
+        var seats = new List<ScreeningSeat>
+        {
+            new() { Id = 1, SeatNumber = "A1", Price = 150m, Status = SeatStatus.Available },
+            new() { Id = 2, SeatNumber = "A2", Price = 200m, Status = SeatStatus.Available }
+        };
+        var request = new BookingRequest(
+            ScreeningId: 1,
+            UserId: 1,
+            BookingType: bookingType,
+            PaymentMode: PaymentMode.Cash,
+            CustomerName: "Guest",
+            CustomerPhone: "1234567890",
+            CustomerAddress: "",
+            ApplyReservationCharge: true,
+            Apply3DCharge: true,
+            SelectedSeats: seats);
+
+        var result = await service.ProcessBookingAsync(request);
+
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Booking);
+        Assert.Equal(bookingType, result.Booking.BookingType);
+        Assert.Equal(350m, result.Booking.TicketAmount);
+        Assert.Equal(20m, result.Booking.ReservationAmount);
+        Assert.Equal(60m, result.Booking.ThreeDAmount);
+        Assert.Equal(430m, result.Booking.TotalAmount);
+    }
+
     [Fact]
     public async Task ProcessBookingAsync_RejectsDamagedSeat()
     {
@@ -184,6 +220,18 @@ public class BookingServiceTests
         public Task<Booking?> GetLatestBookingAsync(CancellationToken cancellationToken = default)
             => Task.FromResult(_lastSaved);
 
+        public Task<IReadOnlyList<Booking>> GetForScreeningSeatsAsync(
+            long screeningId,
+            IEnumerable<long> screeningSeatIds,
+            CancellationToken cancellationToken = default)
+            => Task.FromResult<IReadOnlyList<Booking>>(Array.Empty<Booking>());
+
+        public Task MarkTicketPrintedAsync(
+            IEnumerable<long> bookingIds,
+            IEnumerable<long> confirmedReservationBookingIds,
+            CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
+
         public Task<long> ProcessBookingTransactionAsync(Booking booking, IEnumerable<long> screeningSeatIds, CancellationToken cancellationToken = default)
         {
             _lastSaved = booking;
@@ -198,8 +246,8 @@ public class BookingServiceTests
 
         public Task<ApplicationSetting?> GetByKeyAsync(string key, CancellationToken cancellationToken = default)
         {
-            if (key == "reservation_charge_per_seat") return Task.FromResult<ApplicationSetting?>(new ApplicationSetting { SettingKey = key, SettingValue = "10" });
-            if (key == "three_d_charge_per_seat") return Task.FromResult<ApplicationSetting?>(new ApplicationSetting { SettingKey = key, SettingValue = "30" });
+            if (key == "reservation_charge") return Task.FromResult<ApplicationSetting?>(new ApplicationSetting { SettingKey = key, SettingValue = "10" });
+            if (key == "three_d_charge") return Task.FromResult<ApplicationSetting?>(new ApplicationSetting { SettingKey = key, SettingValue = "30" });
             return Task.FromResult<ApplicationSetting?>(null);
         }
 

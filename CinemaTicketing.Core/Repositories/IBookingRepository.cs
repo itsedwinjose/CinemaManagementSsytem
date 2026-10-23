@@ -7,5 +7,7 @@ public interface IBookingRepository
     Task<Booking?> GetByIdAsync(long bookingId, CancellationToken cancellationToken = default);
     Task<Booking?> GetByBookingNumberAsync(string bookingNumber, CancellationToken cancellationToken = default);
     Task<Booking?> GetLatestBookingAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Booking>> GetForScreeningSeatsAsync(long screeningId, IEnumerable<long> screeningSeatIds, CancellationToken cancellationToken = default);
     Task<long> ProcessBookingTransactionAsync(Booking booking, IEnumerable<long> screeningSeatIds, CancellationToken cancellationToken = default);
+    Task MarkTicketPrintedAsync(IEnumerable<long> bookingIds, IEnumerable<long> confirmedReservationBookingIds, CancellationToken cancellationToken = default);
 }

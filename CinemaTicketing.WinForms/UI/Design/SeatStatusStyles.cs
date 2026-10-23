@@ -14,6 +14,7 @@ public static class SeatStatusStyles
     public static readonly Color OnlineBlocked = Color.FromArgb(0, 162, 232); // Ocean Blue
     public static readonly Color Family = Color.FromArgb(225, 211, 199); // Soft Tan / Pink
     public static readonly Color SeatBlocked = Color.FromArgb(118, 118, 118); // Dark Gray
+    public static readonly Color TicketPrinted = Color.FromArgb(0, 96, 160);
     public static readonly Color Damaged = Color.FromArgb(232, 17, 35); // Solid Red
 
     public static readonly Color SelectionBorder = Color.FromArgb(255, 215, 0); // Vivid gold border

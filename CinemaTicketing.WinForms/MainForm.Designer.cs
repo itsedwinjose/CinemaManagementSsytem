@@ -39,9 +39,6 @@ partial class MainForm
     private System.Windows.Forms.Label movieNameLabel;
     private System.Windows.Forms.Label ticketPriceTitleLabel;
     private System.Windows.Forms.Label ticketPriceLabel;
-    private System.Windows.Forms.RadioButton ticketRadio;
-    private System.Windows.Forms.CheckBox resvChargeCheckBox;
-    private System.Windows.Forms.CheckBox threeDChargeCheckBox;
 
     // Action Buttons Matrix
     private System.Windows.Forms.Button theatreSettingsButton;
@@ -83,7 +80,6 @@ partial class MainForm
         legendFlowPanel = new FlowLayoutPanel();
         rightPanel = new Panel();
         layoutBtn = new Button();
-        reprintRadio = new RadioButton();
         dateLabel = new Label();
         datePicker = new DateTimePicker();
         showLabel = new Label();
@@ -104,9 +100,6 @@ partial class MainForm
         movieNameLabel = new Label();
         ticketPriceTitleLabel = new Label();
         ticketPriceLabel = new Label();
-        ticketRadio = new RadioButton();
-        resvChargeCheckBox = new CheckBox();
-        threeDChargeCheckBox = new CheckBox();
         theatreSettingsButton = new Button();
         setMovieButton = new Button();
         setCurrentShowButton = new Button();
@@ -147,9 +140,9 @@ partial class MainForm
         // 
         seatMap.BackColor = Color.FromArgb(245, 247, 250);
         seatMap.Dock = DockStyle.Fill;
-        seatMap.Location = new Point(0, 28);
+        seatMap.Location = new Point(0, 48);
         seatMap.Name = "seatMap";
-        seatMap.Size = new Size(1413, 1120);
+        seatMap.Size = new Size(1413, 1076);
         seatMap.TabIndex = 1;
         seatMap.SelectionChanged += seatMap_SelectionChanged;
         // 
@@ -160,7 +153,7 @@ partial class MainForm
         audiHeaderPanel.Dock = DockStyle.Top;
         audiHeaderPanel.Location = new Point(0, 0);
         audiHeaderPanel.Name = "audiHeaderPanel";
-        audiHeaderPanel.Size = new Size(1413, 28);
+        audiHeaderPanel.Size = new Size(1413, 48);
         audiHeaderPanel.TabIndex = 0;
         // 
         // audiHeaderLabel
@@ -170,7 +163,7 @@ partial class MainForm
         audiHeaderLabel.ForeColor = Color.FromArgb(30, 30, 30);
         audiHeaderLabel.Location = new Point(0, 0);
         audiHeaderLabel.Name = "audiHeaderLabel";
-        audiHeaderLabel.Size = new Size(1413, 28);
+        audiHeaderLabel.Size = new Size(1413, 48);
         audiHeaderLabel.TabIndex = 0;
         audiHeaderLabel.Text = "Audi-1";
         audiHeaderLabel.TextAlign = ContentAlignment.MiddleCenter;
@@ -181,9 +174,9 @@ partial class MainForm
         bottomBarPanel.Controls.Add(audiTabControl);
         bottomBarPanel.Controls.Add(legendFlowPanel);
         bottomBarPanel.Dock = DockStyle.Bottom;
-        bottomBarPanel.Location = new Point(0, 1148);
+        bottomBarPanel.Location = new Point(0, 1124);
         bottomBarPanel.Name = "bottomBarPanel";
-        bottomBarPanel.Size = new Size(1413, 40);
+        bottomBarPanel.Size = new Size(1413, 64);
         bottomBarPanel.TabIndex = 2;
         // 
         // audiTabControl
@@ -193,7 +186,7 @@ partial class MainForm
         audiTabControl.Location = new Point(0, 0);
         audiTabControl.Name = "audiTabControl";
         audiTabControl.SelectedIndex = 0;
-        audiTabControl.Size = new Size(380, 40);
+        audiTabControl.Size = new Size(550, 64);
         audiTabControl.TabIndex = 0;
         audiTabControl.SelectedIndexChanged += audiTabControl_SelectedIndexChanged;
         // 
@@ -203,15 +196,14 @@ partial class MainForm
         legendFlowPanel.Font = new Font("Segoe UI", 8F);
         legendFlowPanel.Location = new Point(878, 0);
         legendFlowPanel.Name = "legendFlowPanel";
-        legendFlowPanel.Padding = new Padding(0, 8, 0, 0);
-        legendFlowPanel.Size = new Size(535, 40);
+        legendFlowPanel.Padding = new Padding(0, 18, 0, 0);
+        legendFlowPanel.Size = new Size(535, 64);
         legendFlowPanel.TabIndex = 1;
         // 
         // rightPanel
         // 
         rightPanel.BackColor = Color.FromArgb(212, 235, 242);
         rightPanel.Controls.Add(layoutBtn);
-        rightPanel.Controls.Add(reprintRadio);
         rightPanel.Controls.Add(dateLabel);
         rightPanel.Controls.Add(datePicker);
         rightPanel.Controls.Add(showLabel);
@@ -220,9 +212,6 @@ partial class MainForm
         rightPanel.Controls.Add(ticketButton);
         rightPanel.Controls.Add(reservationButton);
         rightPanel.Controls.Add(showInfoGroup);
-        rightPanel.Controls.Add(ticketRadio);
-        rightPanel.Controls.Add(resvChargeCheckBox);
-        rightPanel.Controls.Add(threeDChargeCheckBox);
         rightPanel.Controls.Add(theatreSettingsButton);
         rightPanel.Controls.Add(setMovieButton);
         rightPanel.Controls.Add(setCurrentShowButton);
@@ -245,26 +234,13 @@ partial class MainForm
         layoutBtn.FlatStyle = FlatStyle.Flat;
         layoutBtn.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
         layoutBtn.ForeColor = Color.White;
-        layoutBtn.Location = new Point(275, 927);
+        layoutBtn.Location = new Point(275, 817);
         layoutBtn.Name = "layoutBtn";
         layoutBtn.Size = new Size(144, 43);
         layoutBtn.TabIndex = 24;
         layoutBtn.Text = "Layout";
         layoutBtn.UseVisualStyleBackColor = false;
         layoutBtn.Click += layoutBtn_Click;
-        // 
-        // reprintRadio
-        // 
-        reprintRadio.AutoSize = true;
-        reprintRadio.Checked = true;
-        reprintRadio.Font = new Font("Segoe UI", 8.5F);
-        reprintRadio.Location = new Point(12, 553);
-        reprintRadio.Name = "reprintRadio";
-        reprintRadio.Size = new Size(163, 35);
-        reprintRadio.TabIndex = 23;
-        reprintRadio.TabStop = true;
-        reprintRadio.Text = "Reprint / F6";
-        reprintRadio.UseVisualStyleBackColor = true;
         // 
         // dateLabel
         // 
@@ -367,7 +343,7 @@ partial class MainForm
         // 
         // ticketButton
         // 
-        ticketButton.BackColor = Color.FromArgb(0, 168, 223);
+        ticketButton.Enabled = false;
         ticketButton.FlatStyle = FlatStyle.Flat;
         ticketButton.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
         ticketButton.ForeColor = Color.White;
@@ -381,7 +357,7 @@ partial class MainForm
         // 
         // reservationButton
         // 
-        reservationButton.BackColor = Color.FromArgb(0, 168, 223);
+        reservationButton.Enabled = false;
         reservationButton.FlatStyle = FlatStyle.Flat;
         reservationButton.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
         reservationButton.ForeColor = Color.White;
@@ -499,51 +475,13 @@ partial class MainForm
         ticketPriceLabel.TabIndex = 7;
         ticketPriceLabel.Text = "150";
         // 
-        // ticketRadio
-        // 
-        ticketRadio.AutoSize = true;
-        ticketRadio.Checked = true;
-        ticketRadio.Font = new Font("Segoe UI", 8.5F);
-        ticketRadio.Location = new Point(190, 553);
-        ticketRadio.Name = "ticketRadio";
-        ticketRadio.Size = new Size(105, 35);
-        ticketRadio.TabIndex = 10;
-        ticketRadio.TabStop = true;
-        ticketRadio.Text = "Ticket";
-        ticketRadio.UseVisualStyleBackColor = true;
-        ticketRadio.CheckedChanged += ticketRadio_CheckedChanged;
-        // 
-        // resvChargeCheckBox
-        // 
-        resvChargeCheckBox.AutoSize = true;
-        resvChargeCheckBox.Font = new Font("Segoe UI", 8F);
-        resvChargeCheckBox.Location = new Point(10, 596);
-        resvChargeCheckBox.Name = "resvChargeCheckBox";
-        resvChargeCheckBox.Size = new Size(391, 34);
-        resvChargeCheckBox.TabIndex = 11;
-        resvChargeCheckBox.Text = "Reservation Charge - 10 Rs Per Seat";
-        resvChargeCheckBox.UseVisualStyleBackColor = true;
-        resvChargeCheckBox.CheckedChanged += resvChargeCheckBox_CheckedChanged;
-        // 
-        // threeDChargeCheckBox
-        // 
-        threeDChargeCheckBox.AutoSize = true;
-        threeDChargeCheckBox.Font = new Font("Segoe UI", 8F);
-        threeDChargeCheckBox.Location = new Point(12, 651);
-        threeDChargeCheckBox.Name = "threeDChargeCheckBox";
-        threeDChargeCheckBox.Size = new Size(312, 34);
-        threeDChargeCheckBox.TabIndex = 12;
-        threeDChargeCheckBox.Text = "3 D Charge - 30 Rs Per Seat";
-        threeDChargeCheckBox.UseVisualStyleBackColor = true;
-        threeDChargeCheckBox.CheckedChanged += threeDChargeCheckBox_CheckedChanged;
-        // 
         // theatreSettingsButton
         // 
         theatreSettingsButton.BackColor = Color.FromArgb(0, 130, 200);
         theatreSettingsButton.FlatStyle = FlatStyle.Flat;
         theatreSettingsButton.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
         theatreSettingsButton.ForeColor = Color.White;
-        theatreSettingsButton.Location = new Point(11, 732);
+        theatreSettingsButton.Location = new Point(11, 622);
         theatreSettingsButton.Name = "theatreSettingsButton";
         theatreSettingsButton.Size = new Size(226, 57);
         theatreSettingsButton.TabIndex = 13;
@@ -557,7 +495,7 @@ partial class MainForm
         setMovieButton.FlatStyle = FlatStyle.Flat;
         setMovieButton.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
         setMovieButton.ForeColor = Color.White;
-        setMovieButton.Location = new Point(275, 732);
+        setMovieButton.Location = new Point(275, 622);
         setMovieButton.Name = "setMovieButton";
         setMovieButton.Size = new Size(144, 57);
         setMovieButton.TabIndex = 14;
@@ -571,7 +509,7 @@ partial class MainForm
         setCurrentShowButton.FlatStyle = FlatStyle.Flat;
         setCurrentShowButton.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
         setCurrentShowButton.ForeColor = Color.White;
-        setCurrentShowButton.Location = new Point(11, 798);
+        setCurrentShowButton.Location = new Point(11, 688);
         setCurrentShowButton.Name = "setCurrentShowButton";
         setCurrentShowButton.Size = new Size(226, 51);
         setCurrentShowButton.TabIndex = 15;
@@ -584,7 +522,7 @@ partial class MainForm
         accountsButton.FlatStyle = FlatStyle.Flat;
         accountsButton.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
         accountsButton.ForeColor = Color.White;
-        accountsButton.Location = new Point(275, 798);
+        accountsButton.Location = new Point(275, 688);
         accountsButton.Name = "accountsButton";
         accountsButton.Size = new Size(144, 51);
         accountsButton.TabIndex = 16;
@@ -598,7 +536,7 @@ partial class MainForm
         employeeInfoButton.FlatStyle = FlatStyle.Flat;
         employeeInfoButton.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
         employeeInfoButton.ForeColor = Color.White;
-        employeeInfoButton.Location = new Point(10, 864);
+        employeeInfoButton.Location = new Point(10, 754);
         employeeInfoButton.Name = "employeeInfoButton";
         employeeInfoButton.Size = new Size(227, 44);
         employeeInfoButton.TabIndex = 17;
@@ -611,7 +549,7 @@ partial class MainForm
         passwordChangeButton.FlatStyle = FlatStyle.Flat;
         passwordChangeButton.Font = new Font("Segoe UI", 8.5F, FontStyle.Bold);
         passwordChangeButton.ForeColor = Color.White;
-        passwordChangeButton.Location = new Point(11, 927);
+        passwordChangeButton.Location = new Point(11, 817);
         passwordChangeButton.Name = "passwordChangeButton";
         passwordChangeButton.Size = new Size(226, 44);
         passwordChangeButton.TabIndex = 19;
@@ -625,7 +563,7 @@ partial class MainForm
         seatAllocButton.FlatStyle = FlatStyle.Flat;
         seatAllocButton.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
         seatAllocButton.ForeColor = Color.White;
-        seatAllocButton.Location = new Point(275, 865);
+        seatAllocButton.Location = new Point(275, 755);
         seatAllocButton.Name = "seatAllocButton";
         seatAllocButton.Size = new Size(144, 43);
         seatAllocButton.TabIndex = 20;
@@ -638,7 +576,7 @@ partial class MainForm
         refreshButton.FlatStyle = FlatStyle.Flat;
         refreshButton.Font = new Font("Segoe UI", 9.5F, FontStyle.Bold);
         refreshButton.ForeColor = Color.White;
-        refreshButton.Location = new Point(10, 1002);
+        refreshButton.Location = new Point(10, 892);
         refreshButton.Name = "refreshButton";
         refreshButton.Size = new Size(409, 60);
         refreshButton.TabIndex = 21;
@@ -652,7 +590,7 @@ partial class MainForm
         statsPanel.Controls.Add(soldTotalValueLabel);
         statsPanel.Controls.Add(counterAmountHeaderLabel);
         statsPanel.Controls.Add(counterAmountValueLabel);
-        statsPanel.Location = new Point(10, 1068);
+        statsPanel.Location = new Point(10, 958);
         statsPanel.Name = "statsPanel";
         statsPanel.Size = new Size(409, 102);
         statsPanel.TabIndex = 22;
@@ -754,6 +692,5 @@ partial class MainForm
         PerformLayout();
     }
 
-    private RadioButton reprintRadio;
     private Button layoutBtn;
 }

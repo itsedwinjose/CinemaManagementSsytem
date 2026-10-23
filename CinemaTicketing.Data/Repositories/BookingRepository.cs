@@ -104,6 +104,141 @@ LIMIT 1;
         return booking;
     }
 
+    public async Task<IReadOnlyList<Booking>> GetForScreeningSeatsAsync(
+        long screeningId,
+        IEnumerable<long> screeningSeatIds,
+        CancellationToken cancellationToken = default)
+    {
+        var seatIds = screeningSeatIds.Distinct().ToList();
+        if (seatIds.Count == 0)
+        {
+            return Array.Empty<Booking>();
+        }
+
+        var inClause = string.Join(",", seatIds.Select((_, i) => $"@seatId{i}"));
+        var sql = $"""
+SELECT DISTINCT b.id
+FROM bookings b
+INNER JOIN booking_seats bs ON bs.booking_id = b.id
+WHERE b.screening_id = @screeningId
+  AND bs.screening_seat_id IN ({inClause});
+""";
+
+        var bookingIds = new List<long>();
+        await using (var connection = connectionFactory.CreateConnection())
+        {
+            await connection.OpenAsync(cancellationToken);
+            await using var command = connection.CreateCommand();
+            command.CommandText = sql;
+            AddParameter(command, "@screeningId", screeningId);
+            for (int i = 0; i < seatIds.Count; i++)
+            {
+                AddParameter(command, $"@seatId{i}", seatIds[i]);
+            }
+
+            await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                bookingIds.Add(reader.GetInt64(0));
+            }
+        }
+
+        var bookings = new List<Booking>(bookingIds.Count);
+        foreach (var bookingId in bookingIds)
+        {
+            var booking = await GetByIdAsync(bookingId, cancellationToken);
+            if (booking is not null)
+            {
+                bookings.Add(booking);
+            }
+        }
+
+        return bookings;
+    }
+
+    public async Task MarkTicketPrintedAsync(
+        IEnumerable<long> bookingIds,
+        IEnumerable<long> confirmedReservationBookingIds,
+        CancellationToken cancellationToken = default)
+    {
+        var ids = bookingIds.Distinct().ToList();
+        var confirmedIds = confirmedReservationBookingIds.Distinct().ToList();
+        if (ids.Count == 0)
+        {
+            throw new ArgumentException("At least one booking is required.", nameof(bookingIds));
+        }
+
+        if (confirmedIds.Any(id => !ids.Contains(id)))
+        {
+            throw new ArgumentException("Confirmed reservations must be included in the printed bookings.", nameof(confirmedReservationBookingIds));
+        }
+
+        var bookingInClause = string.Join(",", ids.Select((_, i) => $"@bookingId{i}"));
+        var confirmedInClause = string.Join(",", confirmedIds.Select((_, i) => $"@confirmedId{i}"));
+
+        await using var connection = connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            if (confirmedIds.Count > 0)
+            {
+                var confirmSql = $"""
+UPDATE bookings
+SET booking_type = 'COUNTER_TICKET'
+WHERE id IN ({confirmedInClause})
+  AND booking_type IN ('COUNTER_RESERVED', 'TELEPHONE_RESERVED');
+""";
+                await using var confirmCommand = connection.CreateCommand();
+                confirmCommand.Transaction = transaction;
+                confirmCommand.CommandText = confirmSql;
+                for (int i = 0; i < confirmedIds.Count; i++)
+                {
+                    AddParameter(confirmCommand, $"@confirmedId{i}", confirmedIds[i]);
+                }
+
+                var confirmedCount = await confirmCommand.ExecuteNonQueryAsync(cancellationToken);
+                if (confirmedCount != confirmedIds.Count)
+                {
+                    throw new InvalidOperationException("One or more reservations could not be confirmed.");
+                }
+            }
+
+            var markSql = $"""
+UPDATE screening_seats ss
+INNER JOIN booking_seats bs ON bs.screening_seat_id = ss.id
+SET ss.is_ticket_printed = 1,
+    ss.status = CASE WHEN bs.booking_id IN ({(confirmedIds.Count > 0 ? confirmedInClause : "NULL")})
+                     THEN 'SOLD' ELSE ss.status END
+WHERE bs.booking_id IN ({bookingInClause});
+""";
+            await using (var markCommand = connection.CreateCommand())
+            {
+                markCommand.Transaction = transaction;
+                markCommand.CommandText = markSql;
+                for (int i = 0; i < ids.Count; i++)
+                {
+                    AddParameter(markCommand, $"@bookingId{i}", ids[i]);
+                }
+
+                for (int i = 0; i < confirmedIds.Count; i++)
+                {
+                    AddParameter(markCommand, $"@confirmedId{i}", confirmedIds[i]);
+                }
+
+                await markCommand.ExecuteNonQueryAsync(cancellationToken);
+            }
+
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
+
     public async Task<long> ProcessBookingTransactionAsync(Booking booking, IEnumerable<long> screeningSeatIds, CancellationToken cancellationToken = default)
     {
         var seatIdsList = screeningSeatIds.ToList();

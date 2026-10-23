@@ -75,7 +75,7 @@ namespace CinemaTicketing.WinForms
             userNameTextBox.Margin = new Padding(6);
             userNameTextBox.Name = "userNameTextBox";
             userNameTextBox.Size = new Size(676, 39);
-            userNameTextBox.TabIndex = 4;
+            userNameTextBox.TabIndex = 0;
             // 
             // passwordTextBox
             // 
@@ -84,7 +84,7 @@ namespace CinemaTicketing.WinForms
             passwordTextBox.Name = "passwordTextBox";
             passwordTextBox.PasswordChar = '*';
             passwordTextBox.Size = new Size(676, 39);
-            passwordTextBox.TabIndex = 2;
+            passwordTextBox.TabIndex = 1;
             passwordTextBox.KeyDown += passwordTextBox_KeyDown;
             // 
             // loginButton
@@ -97,7 +97,7 @@ namespace CinemaTicketing.WinForms
             loginButton.Margin = new Padding(6);
             loginButton.Name = "loginButton";
             loginButton.Size = new Size(299, 79);
-            loginButton.TabIndex = 1;
+            loginButton.TabIndex = 2;
             loginButton.Text = "Login";
             loginButton.UseVisualStyleBackColor = false;
             loginButton.Click += loginButton_Click;

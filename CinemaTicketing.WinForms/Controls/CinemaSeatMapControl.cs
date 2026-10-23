@@ -134,7 +134,9 @@ public sealed class CinemaSeatMapControl : Control
                 }
 
                 bool isSelected = _selectedSeatIds.Contains(seat.Id);
-                var statusColor = SeatStatusStyles.GetStatusColor(seat.Status, seat.IsDamaged);
+                var statusColor = seat.IsTicketPrinted && !seat.IsDamaged && seat.Status != SeatStatus.Damaged
+                    ? SeatStatusStyles.TicketPrinted
+                    : SeatStatusStyles.GetStatusColor(seat.Status, seat.IsDamaged);
 
                 using (var fillBrush = new SolidBrush(isSelected ? SeatStatusStyles.SelectionFill : statusColor))
                 {
@@ -281,7 +283,7 @@ public sealed class CinemaSeatMapControl : Control
 
     private void ToggleSeatSelection(ScreeningSeat seat)
     {
-        if (seat.IsDamaged || seat.Status == SeatStatus.Sold)
+        if (seat.IsDamaged || seat.Status == SeatStatus.Damaged)
         {
             return;
         }
@@ -302,7 +304,7 @@ public sealed class CinemaSeatMapControl : Control
         var rectF = (RectangleF)rect;
         foreach (var seat in _seats)
         {
-            if (seat.IsDamaged || seat.Status == SeatStatus.Sold)
+            if (seat.IsDamaged || seat.Status == SeatStatus.Damaged)
             {
                 continue;
             }

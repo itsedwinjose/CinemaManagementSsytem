@@ -28,6 +28,24 @@ public class TheatreSettingsServiceTests
         Assert.Single(await repository.GetAllAsync());
     }
 
+    [Fact]
+    public async Task GetChargeAsync_ReadsLegacyConfiguredChargeValues()
+    {
+        var settingsRepository = new StubAppSettingRepository(new Dictionary<string, string>
+        {
+            ["reservation_charge"] = "12",
+            ["three_d_charge"] = "35"
+        });
+        var service = new TheatreSettingsService(
+            new StubCinemaRepository(),
+            new StubShowTypeRepository(),
+            new InMemoryTheatreSettingRepository(),
+            settingsRepository);
+
+        Assert.Equal(12m, await service.GetReservationChargeAsync());
+        Assert.Equal(35m, await service.Get3DChargeAsync());
+    }
+
     private sealed class StubCinemaRepository : ICinemaRepository
     {
         public Task<IReadOnlyList<CinemaInfo>> GetActiveAsync(CancellationToken cancellationToken = default)
@@ -60,9 +78,26 @@ public class TheatreSettingsServiceTests
 
     private sealed class StubAppSettingRepository : IApplicationSettingRepository
     {
+        private readonly Dictionary<string, string> _settings;
+
+        public StubAppSettingRepository(Dictionary<string, string>? settings = null)
+        {
+            _settings = settings ?? new Dictionary<string, string>();
+        }
+
         public Task<IReadOnlyList<ApplicationSetting>> GetAllAsync(CancellationToken cancellationToken = default) => Task.FromResult<IReadOnlyList<ApplicationSetting>>(Array.Empty<ApplicationSetting>());
-        public Task<ApplicationSetting?> GetByKeyAsync(string settingKey, CancellationToken cancellationToken = default) => Task.FromResult<ApplicationSetting?>(null);
-        public Task UpsertAsync(ApplicationSetting setting, CancellationToken cancellationToken = default) => Task.CompletedTask;
+        public Task<ApplicationSetting?> GetByKeyAsync(string settingKey, CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(_settings.TryGetValue(settingKey, out var value)
+                ? new ApplicationSetting { SettingKey = settingKey, SettingValue = value }
+                : null);
+        }
+
+        public Task UpsertAsync(ApplicationSetting setting, CancellationToken cancellationToken = default)
+        {
+            _settings[setting.SettingKey] = setting.SettingValue;
+            return Task.CompletedTask;
+        }
     }
 
     private sealed class InMemoryTheatreSettingRepository : ITheatreSettingRepository
