@@ -23,6 +23,7 @@ internal partial class MainForm : Form
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
     private readonly IThermalPrintService _printService;
+    private readonly IAdminResetService _adminResetService;
     private readonly User _currentUser;
     private readonly long _cinemaId = 1;
 
@@ -31,6 +32,7 @@ internal partial class MainForm : Form
     private IReadOnlyList<ScreeningSeat> _currentSeats = Array.Empty<ScreeningSeat>();
     private Screening? _selectedScreening;
     private CinemaInfo? _currentCinema;
+    private decimal _threeDChargePerSeat = 30m;
 
     public MainForm(
         IScreeningRepository screeningRepository,
@@ -46,7 +48,8 @@ internal partial class MainForm : Form
         IUserRepository userRepository,
         IPasswordHasher passwordHasher,
         IThermalPrintService printService,
-        User currentUser)
+        User currentUser,
+        IAdminResetService adminResetService)
     {
         _screeningRepository = screeningRepository;
         _audiRepository = audiRepository;
@@ -62,6 +65,7 @@ internal partial class MainForm : Form
         _passwordHasher = passwordHasher;
         _printService = printService;
         _currentUser = currentUser;
+        _adminResetService = adminResetService;
 
         InitializeComponent();
         AppTheme.ApplyAudiTabLayout(audiTabControl);
@@ -153,6 +157,15 @@ internal partial class MainForm : Form
             audiTabControl.SelectedIndex = 0;
             await LoadScreeningsForSelectedAudiAsync();
         }
+        else
+        {
+            _selectedScreening = null;
+            _currentScreenings = Array.Empty<Screening>();
+            _currentSeats = Array.Empty<ScreeningSeat>();
+            seatMap.LoadSeats(1, 1, _currentSeats);
+            UpdateShowInfoLabels();
+            await UpdateStatisticsAsync();
+        }
     }
 
     private async void datePicker_ValueChanged(object sender, EventArgs e)
@@ -177,6 +190,7 @@ internal partial class MainForm : Form
         var date = DateOnly.FromDateTime(datePicker.Value);
         var allScreenings = await _screeningRepository.GetScreeningsAsync(_cinemaId, date);
 
+        var previouslySelectedScreeningId = _selectedScreening?.Id;
         _currentScreenings = allScreenings.Where(s => s.AudiId == selectedAudi.Id).ToList();
 
         showComboBox.DisplayMember = "Display";
@@ -184,21 +198,46 @@ internal partial class MainForm : Form
         showComboBox.DataSource = _currentScreenings.Select(s => new
         {
             Screening = s,
-            Display = $"{s.ShowTypeName} - {DateTime.Today.Add(s.ShowTime):hh:mm tt} [{s.MovieName}]"
+            Display = $"{s.ShowTypeName} - {DateTime.Today.Add(s.ShowTime):hh:mm tt} [{s.MovieName}]{(s.IsCurrentShow ? " [CURRENT]" : "")}"
         }).ToList();
 
         if (_currentScreenings.Count > 0)
         {
-            showComboBox.SelectedIndex = 0;
-            await SelectScreeningAsync(_currentScreenings[0]);
+            var selectedScreening = _currentScreenings.FirstOrDefault(
+                screening => screening.Id == previouslySelectedScreeningId)
+                ?? _currentScreenings.FirstOrDefault(screening => screening.IsCurrentShow)
+                ?? _currentScreenings[0];
+            showComboBox.SelectedValue = selectedScreening;
+            await SelectScreeningAsync(selectedScreening);
         }
         else
         {
             _selectedScreening = null;
             await LoadFallbackAudiSeatsAsync(selectedAudi);
             UpdateShowInfoLabels();
-            UpdateStatistics();
+            await UpdateStatisticsAsync();
         }
+    }
+
+    private async void setCurrentShowButton_Click(object sender, EventArgs e)
+    {
+        if (_selectedScreening is null)
+        {
+            statusLabel.Text = "Select a show before setting it as current.";
+            statusLabel.ForeColor = Color.DarkRed;
+            return;
+        }
+
+        await _screeningRepository.SetCurrentShowAsync(_selectedScreening.Id);
+        var screeningName = $"{_selectedScreening.ShowTypeName} - {DateTime.Today.Add(_selectedScreening.ShowTime):hh:mm tt}";
+        await LoadScreeningsForSelectedAudiAsync();
+        statusLabel.Text = $"Current show set to {screeningName}.";
+        statusLabel.ForeColor = Color.DarkGreen;
+        MessageBox.Show(
+            $"Current show is set to {screeningName} for all Auditoriums.",
+            "Current Show Updated",
+            MessageBoxButtons.OK,
+            MessageBoxIcon.Information);
     }
 
     private async Task LoadFallbackAudiSeatsAsync(Audi audi)
@@ -257,6 +296,7 @@ internal partial class MainForm : Form
     private async Task SelectScreeningAsync(Screening screening)
     {
         _selectedScreening = screening;
+        _threeDChargePerSeat = await _theatreSettingsService.Get3DChargeAsync();
         _currentSeats = await _screeningRepository.GetScreeningSeatsAsync(screening.Id);
 
         var audi = _audis.FirstOrDefault(a => a.Id == screening.AudiId);
@@ -278,19 +318,18 @@ internal partial class MainForm : Form
         }
 
         UpdateShowInfoLabels();
-        UpdateStatistics();
+        await UpdateStatisticsAsync();
     }
 
     private void seatMap_SelectionChanged(object sender, EventArgs e)
     {
-        var hasSelectedSeats = seatMap.GetSelectedSeats().Count > 0;
-        ticketButton.Enabled = hasSelectedSeats;
-        reservationButton.Enabled = hasSelectedSeats;
+        UpdateSeatActionButtons();
         UpdateCalculatedAmount();
     }
 
     private void UpdateShowInfoLabels()
     {
+        UpdateSeatActionButtons();
         if (_selectedScreening is null)
         {
             showTypeNameLabel.Text = "No Show";
@@ -302,34 +341,100 @@ internal partial class MainForm : Form
 
         showTypeNameLabel.Text = _selectedScreening.ShowTypeName;
         showTimeLabel.Text = DateTime.Today.Add(_selectedScreening.ShowTime).ToString("hh:mmtt").ToUpper();
-        movieNameLabel.Text = _selectedScreening.MovieName.ToUpper();
-        ticketPriceLabel.Text = $"{_selectedScreening.DefaultPrice:F0}";
+        movieNameLabel.Text = _selectedScreening.MovieName.ToUpper() + (_selectedScreening.IsMovie3D ? " (3D)" : "");
+        var displayedTicketPrice = _selectedScreening.DefaultPrice
+            + (_selectedScreening.IsMovie3D ? _threeDChargePerSeat : 0m);
+        ticketPriceLabel.Text = $"{displayedTicketPrice:F0}";
 
         UpdateCalculatedAmount();
+    }
+
+    private void UpdateSeatActionButtons()
+    {
+        var canBookSelectedSeats = _selectedScreening?.MovieId.HasValue == true
+            && seatMap.GetSelectedSeats().Count > 0;
+        ticketButton.Enabled = canBookSelectedSeats;
+        reservationButton.Enabled = canBookSelectedSeats;
     }
 
     private void UpdateCalculatedAmount()
     {
         var selected = seatMap.GetSelectedSeats();
-        decimal ticketTotal = selected.Sum(s => s.Price);
+        decimal ticketTotal = selected.Sum(s => s.Price)
+            + (selected.Count * (_selectedScreening?.IsMovie3D == true ? _threeDChargePerSeat : 0m));
 
         statusLabel.Text = $"Selected Seats: {selected.Count} | Total Amount: ₹{ticketTotal:F2}";
         statusLabel.ForeColor = Color.FromArgb(30, 30, 30);
     }
 
-    private void UpdateStatistics()
+    private async Task UpdateStatisticsAsync()
     {
-        int totalSeats = _currentSeats.Count(s => s.IsSeat);
-        int soldSeats = _currentSeats.Count(s => s.IsSeat && (s.Status == SeatStatus.Sold || s.Status == SeatStatus.OnlineBooking));
-        decimal counterTotal = _currentSeats.Where(s => s.IsSeat && s.Status == SeatStatus.Sold).Sum(s => s.Price);
+        var selectedAudi = _selectedScreening is not null
+            ? _audis.FirstOrDefault(audi => audi.Id == _selectedScreening.AudiId)
+            : audiTabControl.SelectedTab?.Tag as Audi;
+        var layoutCells = selectedAudi is null
+            ? Array.Empty<AudiLayoutCell>()
+            : await _audiLayoutRepository.GetCellsForAudiAsync(selectedAudi.Id);
+        var layoutCellsInBounds = selectedAudi is null
+            ? layoutCells
+            : layoutCells.Where(cell =>
+                cell.RowIndex >= 0 && cell.RowIndex < selectedAudi.TotalRows
+                && cell.ColIndex >= 0 && cell.ColIndex < selectedAudi.TotalCols).ToList();
+        var seatsForSelectedAudi = (_selectedScreening is null
+            ? _currentSeats
+            : _currentSeats.Where(seat => seat.ScreeningId == _selectedScreening.Id))
+            .Where(seat => selectedAudi is null
+                || (seat.RowIndex >= 0 && seat.RowIndex < selectedAudi.TotalRows
+                    && seat.ColIndex >= 0 && seat.ColIndex < selectedAudi.TotalCols))
+            .GroupBy(seat => (seat.RowIndex, seat.ColIndex))
+            .Select(group => group.First())
+            .ToList();
+        int totalSeats = layoutCellsInBounds.Count > 0
+            ? layoutCellsInBounds.Count(cell => cell.IsSeat && !cell.IsDamaged)
+            : seatsForSelectedAudi.Count(seat =>
+                seat.IsSeat && !seat.IsDamaged && seat.Status != SeatStatus.Damaged);
+        int soldSeats = seatsForSelectedAudi.Count(seat =>
+            seat.IsSeat && (seat.Status == SeatStatus.Sold || seat.Status == SeatStatus.OnlineBooking));
+        var soldCounterSeats = seatsForSelectedAudi
+            .Where(seat => seat.IsSeat && seat.Status == SeatStatus.Sold)
+            .ToList();
+        decimal counterTotal = 0m;
+        IReadOnlyList<Booking> soldBookings = Array.Empty<Booking>();
+        if (_selectedScreening is not null && soldCounterSeats.Count > 0)
+        {
+            soldBookings = await _bookingService.GetForScreeningSeatsAsync(
+                _selectedScreening.Id,
+                soldCounterSeats.Select(seat => seat.Id));
+            counterTotal = soldBookings
+                .Where(booking => booking.BookingType is BookingType.CounterTicket or BookingType.FreeTicket)
+                .Sum(booking => booking.TotalAmount);
+        }
 
         soldTotalValueLabel.Text = $"{soldSeats} / {totalSeats}";
         counterAmountValueLabel.Text = $"{counterTotal:F0}";
 
-        int cashCount = _currentSeats.Count(s => s.IsSeat && s.Status == SeatStatus.Sold);
-        int onlineCount = _currentSeats.Count(s => s.IsSeat && s.Status == SeatStatus.OnlineBooking);
+        var soldCounterSeatIds = soldCounterSeats.Select(seat => seat.Id).ToHashSet();
+        int cashCount = 0;
         int cardCount = 0;
         int upiCount = 0;
+        foreach (var booking in soldBookings)
+        {
+            int seatCount = booking.Seats.Count(seat => soldCounterSeatIds.Contains(seat.ScreeningSeatId));
+            switch (booking.PaymentMode)
+            {
+                case PaymentMode.Cash:
+                    cashCount += seatCount;
+                    break;
+                case PaymentMode.Card:
+                    cardCount += seatCount;
+                    break;
+                case PaymentMode.UpiQr:
+                    upiCount += seatCount;
+                    break;
+            }
+        }
+
+        int onlineCount = seatsForSelectedAudi.Count(s => s.IsSeat && s.Status == SeatStatus.OnlineBooking);
 
         cashRadio.Text = $"Cash   ( {cashCount} )";
         cardRadio.Text = $"Card   ( {cardCount} )";
@@ -440,7 +545,7 @@ internal partial class MainForm : Form
             CustomerPhone: "",
             CustomerAddress: "",
             ApplyReservationCharge: false,
-            Apply3DCharge: false,
+            Apply3DCharge: screening.IsMovie3D,
             SelectedSeats: selectedSeats);
 
         var result = await _bookingService.ProcessBookingAsync(request);
@@ -565,6 +670,16 @@ internal partial class MainForm : Form
         form.ShowDialog(this);
     }
 
+    private async void adminButton_Click(object sender, EventArgs e)
+    {
+        using var form = new AdminResetForm(_adminResetService);
+        form.ShowDialog(this);
+        if (form.WasReset)
+        {
+            await LoadAudiTabsAsync();
+        }
+    }
+
     private void passwordChangeButton_Click(object sender, EventArgs e)
     {
         using var form = new PasswordChangeForm(_userRepository, _passwordHasher, _currentUser);
@@ -606,4 +721,8 @@ internal partial class MainForm : Form
 
     }
 
+    private void seatAllocButton_Click(object sender, EventArgs e)
+    {
+
+    }
 }

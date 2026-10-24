@@ -141,6 +141,35 @@ public class BookingServiceTests
     }
 
     [Theory]
+    [InlineData(PaymentMode.Card)]
+    [InlineData(PaymentMode.UpiQr)]
+    public async Task ProcessBookingAsync_CounterTicket_PreservesSelectedPaymentMode(PaymentMode paymentMode)
+    {
+        var bookingRepo = new StubBookingRepository();
+        var service = new BookingService(bookingRepo, new StubSettingRepository());
+        var request = new BookingRequest(
+            ScreeningId: 1,
+            UserId: 1,
+            BookingType: BookingType.CounterTicket,
+            PaymentMode: paymentMode,
+            CustomerName: "",
+            CustomerPhone: "",
+            CustomerAddress: "",
+            ApplyReservationCharge: false,
+            Apply3DCharge: false,
+            SelectedSeats: new List<ScreeningSeat>
+            {
+                new() { Id = 1, SeatNumber = "A1", Price = 150m, Status = SeatStatus.Available }
+            });
+
+        var result = await service.ProcessBookingAsync(request);
+
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Booking);
+        Assert.Equal(paymentMode, result.Booking.PaymentMode);
+    }
+
+    [Theory]
     [InlineData(BookingType.CounterReservation)]
     [InlineData(BookingType.TelephoneReservation)]
     public async Task ProcessBookingAsync_ReservationsAddSelectedChargesPerSeat(BookingType bookingType)

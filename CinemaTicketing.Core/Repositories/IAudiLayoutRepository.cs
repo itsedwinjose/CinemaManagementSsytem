@@ -6,5 +6,7 @@ public interface IAudiLayoutRepository
 {
     Task<IReadOnlyList<AudiLayoutCell>> GetCellsForAudiAsync(long audiId, CancellationToken cancellationToken = default);
     Task SaveLayoutCellsAsync(long audiId, int totalRows, int totalCols, IEnumerable<AudiLayoutCell> cells, CancellationToken cancellationToken = default);
+    Task ReplaceLayoutAsync(long audiId, int totalRows, int totalCols, IEnumerable<AudiLayoutCell> cells, CancellationToken cancellationToken = default);
+    Task DeleteLayoutAsync(long audiId, CancellationToken cancellationToken = default);
     Task UpdateCellDamageStatusAsync(long cellId, bool isDamaged, CancellationToken cancellationToken = default);
 }

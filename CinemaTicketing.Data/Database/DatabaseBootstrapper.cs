@@ -20,11 +20,32 @@ public sealed class DatabaseBootstrapper(IMySqlConnectionFactory connectionFacto
         await using var connection = connectionFactory.CreateConnection();
         await connection.OpenAsync(cancellationToken);
 
+        var isFreshDatabase = !await HasCinemaTableAsync(connection, cancellationToken);
         foreach (var scriptName in ScriptNames)
         {
+            if (!isFreshDatabase
+                && scriptName is "002_seed_reference_data.sql" or "004_seed_test_layout_data.sql")
+            {
+                continue;
+            }
+
             var script = await LoadScriptAsync(scriptName, cancellationToken);
             await ExecuteScriptAsync(connection, script, cancellationToken);
         }
+    }
+
+    private static async Task<bool> HasCinemaTableAsync(DbConnection connection, CancellationToken cancellationToken)
+    {
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+SELECT COUNT(*)
+FROM information_schema.TABLES
+WHERE TABLE_SCHEMA = DATABASE()
+  AND TABLE_NAME = 'cinemas'
+  AND TABLE_TYPE = 'BASE TABLE';
+""";
+        var count = Convert.ToInt32(await command.ExecuteScalarAsync(cancellationToken));
+        return count > 0;
     }
 
     private static async Task<string> LoadScriptAsync(string scriptName, CancellationToken cancellationToken)

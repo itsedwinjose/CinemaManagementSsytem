@@ -32,6 +32,8 @@ internal partial class ReservationDialog : Form
 
         resChargeCheckBox.Text = $"Reservation Charge (₹{_resChargePerSeat:F2} per seat)";
         threeDChargeCheckBox.Text = $"3D Charge (₹{_threeDChargePerSeat:F2} per seat)";
+        threeDChargeCheckBox.Checked = _screening.IsMovie3D;
+        threeDChargeCheckBox.Enabled = !_screening.IsMovie3D;
         UpdateSummary();
     }
 
@@ -47,7 +49,9 @@ internal partial class ReservationDialog : Form
     {
         decimal ticketAmount = _seats.Sum(s => s.Price);
         decimal resCharge = resChargeCheckBox.Checked ? (_seats.Count * _resChargePerSeat) : 0m;
-        decimal threeDCharge = threeDChargeCheckBox.Checked ? (_seats.Count * _threeDChargePerSeat) : 0m;
+        decimal threeDCharge = (_screening.IsMovie3D || threeDChargeCheckBox.Checked)
+            ? (_seats.Count * _threeDChargePerSeat)
+            : 0m;
         decimal total = ticketAmount + resCharge + threeDCharge;
 
         summaryLabel.Text =
@@ -98,7 +102,7 @@ internal partial class ReservationDialog : Form
             phoneTextBox.Text.Trim(),
             addressTextBox.Text.Trim(),
             resChargeCheckBox.Checked,
-            threeDChargeCheckBox.Checked,
+            _screening.IsMovie3D || threeDChargeCheckBox.Checked,
             _seats
         );
 

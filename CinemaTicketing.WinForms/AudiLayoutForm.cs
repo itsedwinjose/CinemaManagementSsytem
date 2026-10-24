@@ -15,6 +15,8 @@ internal partial class AudiLayoutForm : Form
     private IReadOnlyList<SeatClass> _seatClasses = Array.Empty<SeatClass>();
     private List<AudiLayoutCell> _currentCells = new();
     private Audi? _selectedAudi;
+    private bool _replaceLayoutOnSave;
+    private bool _restoringAudiSelection;
 
     public AudiLayoutForm(IAudiLayoutService layoutService, ISeatClassRepository seatClassRepository, long cinemaId = 1)
     {
@@ -28,6 +30,7 @@ internal partial class AudiLayoutForm : Form
 
         AppTheme.ApplyTheme(this);
         AppTheme.ApplyPrimaryButton(saveButton);
+        AppTheme.ApplyDestructiveButton(deleteLayoutButton);
         AppTheme.ApplyTealButton(resizeButton);
         AppTheme.ApplyTealButton(markSeatsStairButton);
         AppTheme.ApplyTealButton(markRowStairButton);
@@ -62,10 +65,30 @@ internal partial class AudiLayoutForm : Form
         }
     }
 
-    private async void audiComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    private async void audiComboBox_SelectedIndexChanged(object? sender, EventArgs e)
     {
+        if (_restoringAudiSelection) return;
+
         if (audiComboBox.SelectedItem is Audi audi)
         {
+            if (_replaceLayoutOnSave && _selectedAudi is not null && audi.Id != _selectedAudi.Id)
+            {
+                var discard = MessageBox.Show(
+                    $"Discard the unsaved replacement layout for {_selectedAudi.Name}?",
+                    "Discard Unsaved Layout",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+                if (discard != DialogResult.Yes)
+                {
+                    _restoringAudiSelection = true;
+                    audiComboBox.SelectedItem = _selectedAudi;
+                    _restoringAudiSelection = false;
+                    return;
+                }
+
+                _replaceLayoutOnSave = false;
+            }
+
             await LoadAudiLayoutAsync(audi);
         }
     }
@@ -84,7 +107,11 @@ internal partial class AudiLayoutForm : Form
         statusLabel.ForeColor = Color.FromArgb(30, 30, 30);
     }
 
-    private List<AudiLayoutCell> BuildOrUpdateCellGrid(int rows, int cols, IReadOnlyList<AudiLayoutCell> existing)
+    private List<AudiLayoutCell> BuildOrUpdateCellGrid(
+        int rows,
+        int cols,
+        IReadOnlyList<AudiLayoutCell> existing,
+        bool initializeAsSeats = false)
     {
         var existingDict = existing.ToDictionary(c => (c.RowIndex, c.ColIndex));
         var defaultClassId = _seatClasses.Count > 0 ? _seatClasses[0].Id : (long?)null;
@@ -111,9 +138,9 @@ internal partial class AudiLayoutForm : Form
                         AudiId = _selectedAudi?.Id ?? 0,
                         RowIndex = r,
                         ColIndex = c,
-                        IsSeat = true,
+                        IsSeat = initializeAsSeats || existing.Count > 0,
                         RowLabel = rowLabel,
-                        SeatNumber = seatNum,
+                        SeatNumber = initializeAsSeats || existing.Count > 0 ? seatNum : string.Empty,
                         SeatClassId = defaultClassId,
                         SeatClassName = defaultClassName,
                         IsDamaged = false
@@ -147,13 +174,34 @@ internal partial class AudiLayoutForm : Form
         seatMapEditor.LoadSeats(rows, cols, screeningSeats);
     }
 
-    private void resizeButton_Click(object sender, EventArgs e)
+    private async void resizeButton_Click(object sender, EventArgs e)
     {
+        if (_selectedAudi is null) return;
+
+        var existingCells = await _layoutService.GetLayoutAsync(_selectedAudi.Id);
+        var replacingExistingLayout = existingCells.Count > 0;
+        if (replacingExistingLayout)
+        {
+            var confirmation = MessageBox.Show(
+                $"Resize {_selectedAudi.Name} and replace its existing layout with seats?\r\n\r\n" +
+                "Existing seat layout and screening status data will be removed when you click Save Layout. " +
+                "The operation will be blocked if any seats have booking history.",
+                "Replace Existing Layout",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Warning);
+            if (confirmation != DialogResult.Yes) return;
+        }
+
         int rows = (int)rowsNumeric.Value;
         int cols = (int)colsNumeric.Value;
-        _currentCells = BuildOrUpdateCellGrid(rows, cols, _currentCells);
+        _replaceLayoutOnSave |= replacingExistingLayout;
+        _currentCells = BuildOrUpdateCellGrid(
+            rows,
+            cols,
+            Array.Empty<AudiLayoutCell>(),
+            initializeAsSeats: true);
         RenderSeatMap();
-        statusLabel.Text = $"Grid resized to {rows} x {cols}. Click Save Layout to persist.";
+        statusLabel.Text = $"Grid resized to {rows} x {cols} and initialized as seats. Click Save Layout to replace the existing data.";
         statusLabel.ForeColor = Color.FromArgb(30, 30, 30);
     }
 
@@ -629,7 +677,18 @@ internal partial class AudiLayoutForm : Form
             int rows = (int)rowsNumeric.Value;
             int cols = (int)colsNumeric.Value;
 
-            await _layoutService.SaveLayoutAsync(_selectedAudi.Id, rows, cols, _currentCells);
+            if (_replaceLayoutOnSave)
+            {
+                await _layoutService.ReplaceLayoutAsync(_selectedAudi.Id, rows, cols, _currentCells);
+                _currentCells = (await _layoutService.GetLayoutAsync(_selectedAudi.Id)).ToList();
+                _replaceLayoutOnSave = false;
+                RefreshSelectedAudiDimensions(rows, cols);
+                RenderSeatMap();
+            }
+            else
+            {
+                await _layoutService.SaveLayoutAsync(_selectedAudi.Id, rows, cols, _currentCells);
+            }
             statusLabel.Text = $"Successfully saved layout for {_selectedAudi.Name} ({_currentCells.Count(c => c.IsSeat)} seats).";
             statusLabel.ForeColor = Color.DarkGreen;
         }
@@ -641,6 +700,67 @@ internal partial class AudiLayoutForm : Form
         finally
         {
             saveButton.Enabled = true;
+        }
+    }
+
+    private void RefreshSelectedAudiDimensions(int rows, int cols)
+    {
+        if (_selectedAudi is null) return;
+
+        var updatedAudi = new Audi
+        {
+            Id = _selectedAudi.Id,
+            CinemaId = _selectedAudi.CinemaId,
+            Name = _selectedAudi.Name,
+            DisplayOrder = _selectedAudi.DisplayOrder,
+            TotalRows = rows,
+            TotalCols = cols
+        };
+        _audis = _audis
+            .Select(audi => audi.Id == updatedAudi.Id ? updatedAudi : audi)
+            .ToList();
+        _selectedAudi = updatedAudi;
+
+        audiComboBox.SelectedIndexChanged -= audiComboBox_SelectedIndexChanged;
+        audiComboBox.DataSource = _audis.ToList();
+        audiComboBox.DisplayMember = nameof(Audi.Name);
+        audiComboBox.ValueMember = nameof(Audi.Id);
+        audiComboBox.SelectedValue = updatedAudi.Id;
+        audiComboBox.SelectedIndexChanged += audiComboBox_SelectedIndexChanged;
+    }
+
+    private async void deleteLayoutButton_Click(object sender, EventArgs e)
+    {
+        if (_selectedAudi is null) return;
+
+        var confirmation = MessageBox.Show(
+            $"Delete all layout cells and related screening-seat records for {_selectedAudi.Name}?\r\n\r\n" +
+            "This action is blocked if any of those seats have booking history.",
+            "Delete Auditorium Layout",
+            MessageBoxButtons.YesNo,
+            MessageBoxIcon.Warning);
+        if (confirmation != DialogResult.Yes) return;
+
+        try
+        {
+            deleteLayoutButton.Enabled = false;
+            await _layoutService.DeleteLayoutAsync(_selectedAudi.Id);
+            var rows = (int)rowsNumeric.Value;
+            var cols = (int)colsNumeric.Value;
+            _currentCells = BuildOrUpdateCellGrid(rows, cols, Array.Empty<AudiLayoutCell>());
+            RenderSeatMap();
+            statusLabel.Text = $"Deleted the layout for {_selectedAudi.Name}. Mark seats and save to create a new layout.";
+            statusLabel.ForeColor = Color.DarkGreen;
+        }
+        catch (Exception ex)
+        {
+            statusLabel.Text = $"Could not delete layout: {ex.Message}";
+            statusLabel.ForeColor = Color.DarkRed;
+            MessageBox.Show(this, ex.Message, "Delete Layout Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        finally
+        {
+            deleteLayoutButton.Enabled = true;
         }
     }
 

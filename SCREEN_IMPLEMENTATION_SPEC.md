@@ -172,6 +172,10 @@ Display:
 
 Use the application's existing visual treatment.
 
+## Admin Reset
+
+The Admin button opens an administrator reset form. Reset requires typing `RESET` and confirming the action, then deletes all rows from every database table except `users`. The schema remains in place, and default reference data is seeded only when the database is first initialized, so a reset remains empty after restart.
+
 ---
 
 # 5. Seat Selection Behavior
@@ -229,7 +233,8 @@ If any database validation fails:
 Never allow duplicate sale from two network clients.
 
 - Available seats create a direct ticket booking and become occupied.
-- Direct tickets from the main form do not expose optional reservation or 3D charge checkboxes.
+- Direct tickets from the main form automatically include the configured per-seat 3D charge for 3D screenings.
+- Counter Amount reflects saved totals for sold counter tickets, including reservation and 3D charges on confirmed reservations.
 - Existing online or manually blocked seats show their saved ticket preview only if a booking exists.
 - Counter and telephone reservations are confirmed as ticket sales when previewed; retain their saved ticket and charge amounts.
 - Store the printed-ticket marker separately from the seat status so cashout keeps the original sale category.
@@ -283,12 +288,12 @@ These values come from `application_settings`.
 ### Reserved
 - counter reservation
 - reservation charge applies per seat when selected
-- selected 3D charge applies per seat when selected
+- 3D screenings automatically include the configured per-seat 3D charge; on non-3D screenings it remains optional
 
 ### Tele Reserved
 - telephone reservation
 - reservation charge applies per seat
-- selected 3D charge applies per seat when selected
+- 3D screenings automatically include the configured per-seat 3D charge; on non-3D screenings it remains optional
 - phone number should be stored
 
 The dialog summary displays the selected seat count, ticket subtotal, selected per-seat charges, and final total.
@@ -359,6 +364,8 @@ This is a new form required by the project.
 - Generate/Resize Layout
 - Save
 - Optional Reset/Reload
+
+Resizing an existing layout stages a fresh grid where every cell is an active seat. Saving replaces the prior layout and clears unbooked screening-seat state; replacement is blocked when seats in that Auditorium have booking history.
 
 ## Visual Editor
 

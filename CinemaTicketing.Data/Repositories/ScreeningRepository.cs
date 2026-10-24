@@ -265,7 +265,6 @@ WHERE cinema_id = @cinemaId AND screening_date = @screeningDate AND audi_id = @a
 
         try
         {
-            // Clear current show for same cinema & date
             const string clearSql = """
 UPDATE screenings s1
 INNER JOIN screenings s2 ON s1.cinema_id = s2.cinema_id AND s1.screening_date = s2.screening_date
@@ -280,7 +279,15 @@ WHERE s2.id = @screeningId;
                 await clearCmd.ExecuteNonQueryAsync(cancellationToken);
             }
 
-            const string setSql = "UPDATE screenings SET is_current_show = 1 WHERE id = @screeningId;";
+            const string setSql = """
+UPDATE screenings target
+INNER JOIN screenings selected ON selected.id = @screeningId
+SET target.is_current_show = 1
+WHERE target.cinema_id = selected.cinema_id
+  AND target.screening_date = selected.screening_date
+  AND target.show_type_id = selected.show_type_id
+  AND target.show_time = selected.show_time;
+""";
             await using (var setCmd = connection.CreateCommand())
             {
                 setCmd.Transaction = transaction;

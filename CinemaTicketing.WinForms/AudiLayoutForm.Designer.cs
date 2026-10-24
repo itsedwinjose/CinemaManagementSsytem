@@ -13,6 +13,7 @@ partial class AudiLayoutForm
     private System.Windows.Forms.NumericUpDown colsNumeric;
     private System.Windows.Forms.Button resizeButton;
     private System.Windows.Forms.Button saveButton;
+    private System.Windows.Forms.Button deleteLayoutButton;
     private System.Windows.Forms.Button manageClassesButton;
     private System.Windows.Forms.GroupBox toolBox;
     private System.Windows.Forms.RadioButton markSeatRadio;
@@ -49,6 +50,7 @@ partial class AudiLayoutForm
         topPanel = new Panel();
         manageClassesButton = new Button();
         saveButton = new Button();
+        deleteLayoutButton = new Button();
         resizeButton = new Button();
         colsNumeric = new NumericUpDown();
         colsLabel = new Label();
@@ -99,6 +101,7 @@ partial class AudiLayoutForm
         // 
         topPanel.Controls.Add(manageClassesButton);
         topPanel.Controls.Add(saveButton);
+        topPanel.Controls.Add(deleteLayoutButton);
         topPanel.Controls.Add(resizeButton);
         topPanel.Controls.Add(colsNumeric);
         topPanel.Controls.Add(colsLabel);
@@ -114,9 +117,9 @@ partial class AudiLayoutForm
         // 
         // manageClassesButton
         // 
-        manageClassesButton.Location = new Point(1648, 8);
+        manageClassesButton.Location = new Point(1690, 8);
         manageClassesButton.Name = "manageClassesButton";
-        manageClassesButton.Size = new Size(254, 48);
+        manageClassesButton.Size = new Size(212, 48);
         manageClassesButton.TabIndex = 8;
         manageClassesButton.Text = "Seat Classes...";
         manageClassesButton.UseVisualStyleBackColor = true;
@@ -124,19 +127,29 @@ partial class AudiLayoutForm
         // 
         // saveButton
         // 
-        saveButton.Location = new Point(1395, 8);
+        saveButton.Location = new Point(1275, 8);
         saveButton.Name = "saveButton";
-        saveButton.Size = new Size(206, 48);
+        saveButton.Size = new Size(185, 48);
         saveButton.TabIndex = 7;
         saveButton.Text = "Save Layout";
         saveButton.UseVisualStyleBackColor = true;
         saveButton.Click += saveButton_Click;
+        //
+        // deleteLayoutButton
+        //
+        deleteLayoutButton.Location = new Point(1475, 8);
+        deleteLayoutButton.Name = "deleteLayoutButton";
+        deleteLayoutButton.Size = new Size(190, 48);
+        deleteLayoutButton.TabIndex = 9;
+        deleteLayoutButton.Text = "Delete Layout";
+        deleteLayoutButton.UseVisualStyleBackColor = true;
+        deleteLayoutButton.Click += deleteLayoutButton_Click;
         // 
         // resizeButton
         // 
-        resizeButton.Location = new Point(1135, 8);
+        resizeButton.Location = new Point(1055, 8);
         resizeButton.Name = "resizeButton";
-        resizeButton.Size = new Size(216, 48);
+        resizeButton.Size = new Size(200, 48);
         resizeButton.TabIndex = 6;
         resizeButton.Text = "Resize Grid";
         resizeButton.UseVisualStyleBackColor = true;

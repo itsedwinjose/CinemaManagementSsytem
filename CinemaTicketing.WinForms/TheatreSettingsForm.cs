@@ -1,5 +1,6 @@
 using CinemaTicketing.Core.Entities;
 using CinemaTicketing.Core.Services;
+using System.Data.Common;
 
 namespace CinemaTicketing.WinForms;
 
@@ -107,9 +108,23 @@ internal partial class TheatreSettingsForm : Form
 
     private async void threeDAddButton_Click(object sender, EventArgs e)
     {
-        await _theatreSettingsService.Save3DChargeAsync(threeDPriceNumeric.Value);
-        statusLabel.Text = $"3D charge updated to ₹{threeDPriceNumeric.Value:F0}.";
-        statusLabel.ForeColor = Color.DarkGreen;
+        try
+        {
+            threeDAddButton.Enabled = false;
+            await _theatreSettingsService.Save3DChargeAsync(threeDPriceNumeric.Value);
+            statusLabel.Text = $"3D charge updated to ₹{threeDPriceNumeric.Value:F0}.";
+            statusLabel.ForeColor = Color.DarkGreen;
+        }
+        catch (DbException ex)
+        {
+            statusLabel.Text = $"Could not save 3D charge: {ex.Message}";
+            statusLabel.ForeColor = Color.DarkRed;
+            MessageBox.Show(this, ex.Message, "Save Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        finally
+        {
+            threeDAddButton.Enabled = true;
+        }
     }
 
     private async void addShowTypeButton_Click(object sender, EventArgs e)
@@ -195,6 +210,12 @@ internal partial class TheatreSettingsForm : Form
 
             ResetForm();
             await LoadGridAsync();
+        }
+        catch (DbException ex)
+        {
+            statusLabel.Text = $"Could not save theatre setting: {ex.Message}";
+            statusLabel.ForeColor = Color.DarkRed;
+            MessageBox.Show(this, ex.Message, "Save Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
         finally
         {

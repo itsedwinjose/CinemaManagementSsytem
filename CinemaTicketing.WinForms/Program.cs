@@ -22,6 +22,7 @@ internal static class Program
             var connectionFactory = new MySqlConnectionFactory(settings.Database);
             var databaseBootstrapper = new DatabaseBootstrapper(connectionFactory);
             var databaseHealthCheckService = new DatabaseHealthCheckService(connectionFactory);
+            var adminResetService = new AdminResetService(connectionFactory);
             var passwordHasher = new PasswordHasher();
             var userRepository = new UserRepository(connectionFactory, passwordHasher);
             var authenticationService = new AuthenticationService(userRepository);
@@ -78,7 +79,8 @@ internal static class Program
                 userRepository,
                 passwordHasher,
                 printService,
-                loginForm.AuthenticatedUser
+                loginForm.AuthenticatedUser,
+                adminResetService
             ));
         }
         catch (Exception ex)

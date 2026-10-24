@@ -58,7 +58,12 @@ public sealed class CinemaSeatMapControl : Control
 
     public IReadOnlyList<ScreeningSeat> GetSelectedSeats()
     {
-        return _seats.Where(s => _selectedSeatIds.Contains(s.Id)).ToList();
+        return _seats
+            .Where(seat => _selectedSeatIds.Contains(seat.Id)
+                && seat.IsSeat
+                && !seat.IsDamaged
+                && seat.Status != SeatStatus.Damaged)
+            .ToList();
     }
 
     protected override void OnPaint(PaintEventArgs e)
@@ -133,8 +138,9 @@ public sealed class CinemaSeatMapControl : Control
                     continue;
                 }
 
-                bool isSelected = _selectedSeatIds.Contains(seat.Id);
-                var statusColor = seat.IsTicketPrinted && !seat.IsDamaged && seat.Status != SeatStatus.Damaged
+                bool isDamaged = seat.IsDamaged || seat.Status == SeatStatus.Damaged;
+                bool isSelected = !isDamaged && _selectedSeatIds.Contains(seat.Id);
+                var statusColor = seat.IsTicketPrinted && !isDamaged
                     ? SeatStatusStyles.TicketPrinted
                     : SeatStatusStyles.GetStatusColor(seat.Status, seat.IsDamaged);
 
@@ -156,6 +162,13 @@ public sealed class CinemaSeatMapControl : Control
                     using var textBrush = new SolidBrush(textColor);
                     var font = cellW < 25 ? AppFonts.SmallText : AppFonts.SeatLabel;
                     g.DrawString(seat.SeatNumber, font, textBrush, cellRect, centerSf);
+                }
+
+                if (isDamaged)
+                {
+                    using var damagePen = new Pen(Color.White, Math.Max(1.5f, cellW / 12f));
+                    g.DrawLine(damagePen, cellRect.Left + 3, cellRect.Top + 3, cellRect.Right - 3, cellRect.Bottom - 3);
+                    g.DrawLine(damagePen, cellRect.Right - 3, cellRect.Top + 3, cellRect.Left + 3, cellRect.Bottom - 3);
                 }
             }
         }

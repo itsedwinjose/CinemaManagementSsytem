@@ -1,5 +1,9 @@
 INSERT IGNORE INTO cinemas (id, name, address, mobile, gstin, is_active)
-VALUES (1, 'Demo Cinema', '', '', '', 1);
+VALUES (1, 'Sree Kaleshwari Theatre', '', '', '', 1);
+
+UPDATE cinemas
+SET name = 'Sree Kaleshwari Theatre'
+WHERE id = 1 AND name = 'Demo Cinema';
 
 INSERT IGNORE INTO application_settings (setting_key, setting_value, description)
 VALUES

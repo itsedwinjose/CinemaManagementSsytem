@@ -20,6 +20,12 @@ public sealed class AudiLayoutService(
     public Task SaveLayoutAsync(long audiId, int totalRows, int totalCols, IEnumerable<AudiLayoutCell> cells, CancellationToken cancellationToken = default)
         => audiLayoutRepository.SaveLayoutCellsAsync(audiId, totalRows, totalCols, cells, cancellationToken);
 
+    public Task ReplaceLayoutAsync(long audiId, int totalRows, int totalCols, IEnumerable<AudiLayoutCell> cells, CancellationToken cancellationToken = default)
+        => audiLayoutRepository.ReplaceLayoutAsync(audiId, totalRows, totalCols, cells, cancellationToken);
+
+    public Task DeleteLayoutAsync(long audiId, CancellationToken cancellationToken = default)
+        => audiLayoutRepository.DeleteLayoutAsync(audiId, cancellationToken);
+
     public Task ToggleDamageAsync(long cellId, bool isDamaged, CancellationToken cancellationToken = default)
         => audiLayoutRepository.UpdateCellDamageStatusAsync(cellId, isDamaged, cancellationToken);
 }

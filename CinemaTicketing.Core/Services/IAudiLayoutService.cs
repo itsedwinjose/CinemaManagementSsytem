@@ -8,5 +8,7 @@ public interface IAudiLayoutService
     Task<IReadOnlyList<SeatClass>> GetSeatClassesAsync(CancellationToken cancellationToken = default);
     Task<IReadOnlyList<AudiLayoutCell>> GetLayoutAsync(long audiId, CancellationToken cancellationToken = default);
     Task SaveLayoutAsync(long audiId, int totalRows, int totalCols, IEnumerable<AudiLayoutCell> cells, CancellationToken cancellationToken = default);
+    Task ReplaceLayoutAsync(long audiId, int totalRows, int totalCols, IEnumerable<AudiLayoutCell> cells, CancellationToken cancellationToken = default);
+    Task DeleteLayoutAsync(long audiId, CancellationToken cancellationToken = default);
     Task ToggleDamageAsync(long cellId, bool isDamaged, CancellationToken cancellationToken = default);
 }

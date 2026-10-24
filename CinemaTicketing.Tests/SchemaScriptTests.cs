@@ -11,6 +11,8 @@ public class SchemaScriptTests
 
         Assert.Contains("CREATE TABLE IF NOT EXISTS users", sql);
         Assert.Contains("CREATE TABLE IF NOT EXISTS application_settings", sql);
+        Assert.Contains("CREATE TABLE IF NOT EXISTS theatre_settings", sql);
+        Assert.DoesNotContain("DROP TABLE IF EXISTS theatre_settings", sql);
     }
 
     [Fact]

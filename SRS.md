@@ -649,11 +649,8 @@ If selected:
 Selected Seats × 3D Charge Per Seat
 ```
 
-Important:
-
-A movie being marked as 3D does NOT automatically add the 3D charge.
-
-The operator must explicitly select the 3D Charge option.
+For 3D screenings, the configured charge is automatically applied per seat.
+For non-3D screenings, the operator may optionally select the 3D Charge option.
 
 ---
 
@@ -819,7 +816,7 @@ Default:
 ₹30 per seat
 ```
 
-It is not automatically added merely because a movie is 3D.
+It is automatically added per seat when the screening's movie is marked as 3D.
 
 ---
 
@@ -850,7 +847,7 @@ Actions:
 
 Movie master stores `is_3d`.
 
-The 3D flag does not automatically add a charge.
+The 3D flag causes the configured 3D charge to be added per seat.
 
 ---
 

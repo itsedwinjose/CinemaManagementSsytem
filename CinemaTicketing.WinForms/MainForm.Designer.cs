@@ -47,7 +47,7 @@ partial class MainForm
     private System.Windows.Forms.Button accountsButton;
     private System.Windows.Forms.Button employeeInfoButton;
     private System.Windows.Forms.Button passwordChangeButton;
-    private System.Windows.Forms.Button seatAllocButton;
+    private System.Windows.Forms.Button adminButton;
     private System.Windows.Forms.Button refreshButton;
 
     // Bottom Stats Strips
@@ -106,7 +106,7 @@ partial class MainForm
         accountsButton = new Button();
         employeeInfoButton = new Button();
         passwordChangeButton = new Button();
-        seatAllocButton = new Button();
+        adminButton = new Button();
         refreshButton = new Button();
         statsPanel = new Panel();
         soldTotalHeaderLabel = new Label();
@@ -218,7 +218,7 @@ partial class MainForm
         rightPanel.Controls.Add(accountsButton);
         rightPanel.Controls.Add(employeeInfoButton);
         rightPanel.Controls.Add(passwordChangeButton);
-        rightPanel.Controls.Add(seatAllocButton);
+        rightPanel.Controls.Add(adminButton);
         rightPanel.Controls.Add(refreshButton);
         rightPanel.Controls.Add(statsPanel);
         rightPanel.Dock = DockStyle.Right;
@@ -515,6 +515,7 @@ partial class MainForm
         setCurrentShowButton.TabIndex = 15;
         setCurrentShowButton.Text = "Set Current Show";
         setCurrentShowButton.UseVisualStyleBackColor = false;
+        setCurrentShowButton.Click += setCurrentShowButton_Click;
         // 
         // accountsButton
         // 
@@ -557,18 +558,19 @@ partial class MainForm
         passwordChangeButton.UseVisualStyleBackColor = false;
         passwordChangeButton.Click += passwordChangeButton_Click;
         // 
-        // seatAllocButton
+        // adminButton
         // 
-        seatAllocButton.BackColor = Color.FromArgb(0, 130, 200);
-        seatAllocButton.FlatStyle = FlatStyle.Flat;
-        seatAllocButton.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
-        seatAllocButton.ForeColor = Color.White;
-        seatAllocButton.Location = new Point(275, 755);
-        seatAllocButton.Name = "seatAllocButton";
-        seatAllocButton.Size = new Size(144, 43);
-        seatAllocButton.TabIndex = 20;
-        seatAllocButton.Text = "Seat Type";
-        seatAllocButton.UseVisualStyleBackColor = false;
+        adminButton.BackColor = Color.FromArgb(0, 130, 200);
+        adminButton.FlatStyle = FlatStyle.Flat;
+        adminButton.Font = new Font("Segoe UI", 8F, FontStyle.Bold);
+        adminButton.ForeColor = Color.White;
+        adminButton.Location = new Point(275, 755);
+        adminButton.Name = "adminButton";
+        adminButton.Size = new Size(144, 43);
+        adminButton.TabIndex = 20;
+        adminButton.Text = "Admin";
+        adminButton.UseVisualStyleBackColor = false;
+        adminButton.Click += adminButton_Click;
         // 
         // refreshButton
         // 
@@ -604,7 +606,7 @@ partial class MainForm
         soldTotalHeaderLabel.Name = "soldTotalHeaderLabel";
         soldTotalHeaderLabel.Size = new Size(172, 47);
         soldTotalHeaderLabel.TabIndex = 0;
-        soldTotalHeaderLabel.Text = "Sold / Total";
+        soldTotalHeaderLabel.Text = "Audi Sold / Total";
         soldTotalHeaderLabel.TextAlign = ContentAlignment.MiddleCenter;
         // 
         // soldTotalValueLabel
@@ -617,7 +619,7 @@ partial class MainForm
         soldTotalValueLabel.Name = "soldTotalValueLabel";
         soldTotalValueLabel.Size = new Size(172, 55);
         soldTotalValueLabel.TabIndex = 1;
-        soldTotalValueLabel.Text = "67 / 484";
+        soldTotalValueLabel.Text = "0 / 0";
         soldTotalValueLabel.TextAlign = ContentAlignment.MiddleCenter;
         soldTotalValueLabel.Click += soldTotalValueLabel_Click;
         // 

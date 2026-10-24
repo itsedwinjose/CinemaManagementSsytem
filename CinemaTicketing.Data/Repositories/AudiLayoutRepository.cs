@@ -101,6 +101,171 @@ ON DUPLICATE KEY UPDATE
         }
     }
 
+    public async Task DeleteLayoutAsync(long audiId, CancellationToken cancellationToken = default)
+    {
+        await using var connection = connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            const string bookedSeatsSql = """
+SELECT COUNT(*)
+FROM screening_seats ss
+INNER JOIN screenings s ON s.id = ss.screening_id
+INNER JOIN audi_layout_cells alc ON alc.id = ss.audi_layout_cell_id
+INNER JOIN booking_seats bs ON bs.screening_seat_id = ss.id
+WHERE alc.audi_id = @audiId;
+""";
+            await using (var bookedSeatsCommand = connection.CreateCommand())
+            {
+                bookedSeatsCommand.Transaction = transaction;
+                bookedSeatsCommand.CommandText = bookedSeatsSql;
+                AddParameter(bookedSeatsCommand, "@audiId", audiId);
+                var bookedSeatCount = Convert.ToInt64(
+                    await bookedSeatsCommand.ExecuteScalarAsync(cancellationToken));
+                if (bookedSeatCount > 0)
+                {
+                    throw new InvalidOperationException(
+                        "This Auditorium has seats linked to bookings. Its layout cannot be deleted without deleting booking history.");
+                }
+            }
+
+            const string deleteScreeningSeatsSql = """
+DELETE ss
+FROM screening_seats ss
+INNER JOIN screenings s ON s.id = ss.screening_id
+INNER JOIN audi_layout_cells alc ON alc.id = ss.audi_layout_cell_id
+WHERE alc.audi_id = @audiId;
+""";
+            await using (var deleteScreeningSeatsCommand = connection.CreateCommand())
+            {
+                deleteScreeningSeatsCommand.Transaction = transaction;
+                deleteScreeningSeatsCommand.CommandText = deleteScreeningSeatsSql;
+                AddParameter(deleteScreeningSeatsCommand, "@audiId", audiId);
+                await deleteScreeningSeatsCommand.ExecuteNonQueryAsync(cancellationToken);
+            }
+
+            await using (var deleteLayoutCommand = connection.CreateCommand())
+            {
+                deleteLayoutCommand.Transaction = transaction;
+                deleteLayoutCommand.CommandText = "DELETE FROM audi_layout_cells WHERE audi_id = @audiId;";
+                AddParameter(deleteLayoutCommand, "@audiId", audiId);
+                await deleteLayoutCommand.ExecuteNonQueryAsync(cancellationToken);
+            }
+
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
+
+    public async Task ReplaceLayoutAsync(
+        long audiId,
+        int totalRows,
+        int totalCols,
+        IEnumerable<AudiLayoutCell> cells,
+        CancellationToken cancellationToken = default)
+    {
+        var newCells = cells.ToList();
+        if (newCells.Any(cell =>
+            cell.RowIndex < 0 || cell.RowIndex >= totalRows
+            || cell.ColIndex < 0 || cell.ColIndex >= totalCols))
+        {
+            throw new ArgumentException("Layout cells must fit within the specified grid dimensions.", nameof(cells));
+        }
+
+        await using var connection = connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+
+        try
+        {
+            const string bookedSeatsSql = """
+SELECT COUNT(*)
+FROM screening_seats ss
+INNER JOIN audi_layout_cells alc ON alc.id = ss.audi_layout_cell_id
+INNER JOIN booking_seats bs ON bs.screening_seat_id = ss.id
+WHERE alc.audi_id = @audiId;
+""";
+            await using (var bookedSeatsCommand = connection.CreateCommand())
+            {
+                bookedSeatsCommand.Transaction = transaction;
+                bookedSeatsCommand.CommandText = bookedSeatsSql;
+                AddParameter(bookedSeatsCommand, "@audiId", audiId);
+                var bookedSeatCount = Convert.ToInt64(
+                    await bookedSeatsCommand.ExecuteScalarAsync(cancellationToken));
+                if (bookedSeatCount > 0)
+                {
+                    throw new InvalidOperationException(
+                        "This Auditorium has seats linked to bookings. Its layout cannot be resized without deleting booking history.");
+                }
+            }
+
+            await using (var deleteScreeningSeatsCommand = connection.CreateCommand())
+            {
+                deleteScreeningSeatsCommand.Transaction = transaction;
+                deleteScreeningSeatsCommand.CommandText = """
+DELETE ss
+FROM screening_seats ss
+INNER JOIN audi_layout_cells alc ON alc.id = ss.audi_layout_cell_id
+WHERE alc.audi_id = @audiId;
+""";
+                AddParameter(deleteScreeningSeatsCommand, "@audiId", audiId);
+                await deleteScreeningSeatsCommand.ExecuteNonQueryAsync(cancellationToken);
+            }
+
+            await using (var deleteLayoutCommand = connection.CreateCommand())
+            {
+                deleteLayoutCommand.Transaction = transaction;
+                deleteLayoutCommand.CommandText = "DELETE FROM audi_layout_cells WHERE audi_id = @audiId;";
+                AddParameter(deleteLayoutCommand, "@audiId", audiId);
+                await deleteLayoutCommand.ExecuteNonQueryAsync(cancellationToken);
+            }
+
+            await using (var updateAudiCommand = connection.CreateCommand())
+            {
+                updateAudiCommand.Transaction = transaction;
+                updateAudiCommand.CommandText = "UPDATE audis SET total_rows = @rows, total_cols = @cols WHERE id = @audiId;";
+                AddParameter(updateAudiCommand, "@rows", totalRows);
+                AddParameter(updateAudiCommand, "@cols", totalCols);
+                AddParameter(updateAudiCommand, "@audiId", audiId);
+                await updateAudiCommand.ExecuteNonQueryAsync(cancellationToken);
+            }
+
+            foreach (var cell in newCells)
+            {
+                await using var insertCellCommand = connection.CreateCommand();
+                insertCellCommand.Transaction = transaction;
+                insertCellCommand.CommandText = """
+INSERT INTO audi_layout_cells
+    (audi_id, row_index, col_index, is_seat, row_label, seat_number, seat_class_id, is_damaged)
+VALUES
+    (@audiId, @rowIndex, @colIndex, @isSeat, @rowLabel, @seatNumber, @seatClassId, @isDamaged);
+""";
+                AddParameter(insertCellCommand, "@audiId", audiId);
+                AddParameter(insertCellCommand, "@rowIndex", cell.RowIndex);
+                AddParameter(insertCellCommand, "@colIndex", cell.ColIndex);
+                AddParameter(insertCellCommand, "@isSeat", cell.IsSeat ? 1 : 0);
+                AddParameter(insertCellCommand, "@rowLabel", cell.RowLabel);
+                AddParameter(insertCellCommand, "@seatNumber", cell.SeatNumber);
+                AddParameter(insertCellCommand, "@seatClassId", cell.SeatClassId.HasValue ? cell.SeatClassId.Value : DBNull.Value);
+                AddParameter(insertCellCommand, "@isDamaged", cell.IsDamaged ? 1 : 0);
+                await insertCellCommand.ExecuteNonQueryAsync(cancellationToken);
+            }
+
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
+    }
+
     public async Task UpdateCellDamageStatusAsync(long cellId, bool isDamaged, CancellationToken cancellationToken = default)
     {
         const string sql = "UPDATE audi_layout_cells SET is_damaged = @isDamaged WHERE id = @id;";
